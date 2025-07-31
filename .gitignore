@@ -53,3 +53,15 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# macOS system files
+.DS_Store
+
+# VSCode settings
+.vscode/
+
+# Editor backup files
+*~
+.*~
+*.swp
+*.swo
