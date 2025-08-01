@@ -26,13 +26,3 @@ char	*ft_strdup(const char *s)
 	result[size] = '\0';
 	return (result);
 }
-/*
-#include <string.h>
-#include <stdio.h>
-int main()
-{
-	char	str[] = "hello world";
-	char	*result;
-	result = ft_strdup(str);
-	printf("%s", result);
-}*/
