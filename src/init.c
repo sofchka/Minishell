@@ -35,3 +35,12 @@ void	init_shell(t_shell *shell)
 	shell->stdout_backup = dup(STDOUT_FILENO);
 //...
 }
+
+void	init_2(t_shell *sh)
+{
+	sh->pipe_count = 0;
+	sh->redir_in = 0;
+	sh->redir_out = 0;
+	sh->append_out = 0;
+	sh->heredoc = 0;
+}

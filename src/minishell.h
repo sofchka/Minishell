@@ -28,13 +28,41 @@ typedef struct s_shell
 	char	**env;
 	char	*input;
 	char	**paths;
+	char	**tokens;
+	int		tok_count;
+	int		pipe_count;
+	int		redir_in;
+	int		redir_out;
+	int		append_out;
+	int		heredoc;
 	int		stdin_backup;
 	int		stdout_backup;
 	// (pipes, fds, tokens, etc.)
 }			t_shell;
 
+typedef enum e_data
+{
+	WORD,// normal word (command/argument)
+	PIPE,// |
+	REDIR_IN,// <
+	REDIR_OUT,// >
+	APPEND,// >>
+	HEREDOC,// <<
+	SPACE,// whitespace
+	TAB,// tab
+	NEWLINE,// \n
+	QUOTE,// single quote '
+	DQUOTE,// double quote "
+	ENV_VAR// $VARIABLE
+}t_data;
+
+
 char		**dup_env(char **envp);
+void		ft_free(char **arg);
 void		init_shell(t_shell *shell);
-int			minishell_start(t_shell *shell);
+int		minishell_start(t_shell *shell);
+int		token(t_shell *sh);
+void		init_2(t_shell *sh);
+int		has_open_quote(const char *s);
 
 #endif
