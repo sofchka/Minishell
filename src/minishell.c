@@ -26,7 +26,6 @@ int	minishell_start(t_shell *shell)
 			// 	write(1, "\n", 1);
 			// }
 			add_history(shell->input);
-			
 		}
 	}
 	return (0);

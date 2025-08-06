@@ -64,5 +64,7 @@ int		minishell_start(t_shell *shell);
 int		token(t_shell *sh);
 void		init_2(t_shell *sh);
 int		has_open_quote(const char *s);
+int		syntax_error(const char *input);
+int	is_operator(const char *s, int *len, t_data *type);
 
 #endif

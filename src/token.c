@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-static int	is_operator(const char *s, int *len, t_data *type)
+int	is_operator(const char *s, int *len, t_data *type)
 {
 	if (!ft_strncmp(s, ">>", 2))
 		return (*len = 2, *type = APPEND, 1);
@@ -95,11 +95,8 @@ int	token(t_shell *sh)
 	char	**tokens;
 
 	init_2(sh);
-	if (has_open_quote(sh->input))
-	{
-		write(2, "Syntax error: unclosed quote.\n", 31);
+	if (has_open_quote(sh->input) || syntax_error(sh->input))
 		return (1);
-	}
 	sh->tok_count = count_tokens(sh->input);
 	if (sh->tok_count == 0)
 		return (1);
