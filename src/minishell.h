@@ -53,18 +53,32 @@ typedef enum e_data
 	NEWLINE,// \n
 	QUOTE,// single quote '
 	DQUOTE,// double quote "
-	ENV_VAR// $VARIABLE
-}t_data;
+	ENV_VAR,// $VARIABLE
+}	t_data;
 
+typedef struct s_vars
+{
+	int		*pfd;
+	pid_t	*pids;
+	int		infile;
+	int		outfile;
+	char	*path;
+	char	**cmd;
+}	t_vars;
 
+// typedef
+
+void		ft(char **str, char *arr);
 char		**dup_env(char **envp);
 void		ft_free(char **arg);
 void		init_shell(t_shell *shell);
-int		minishell_start(t_shell *shell);
-int		token(t_shell *sh);
+int			minishell_start(t_shell *shell);
+int			token(t_shell *sh);
 void		init_2(t_shell *sh);
-int		has_open_quote(const char *s);
-int		syntax_error(const char *input);
-int	is_operator(const char *s, int *len, t_data *type);
+int			has_open_quote(const char *s);
+int			syntax_error(const char *input);
+int			is_operator(const char *s, int *len, t_data *type);
+int			start(t_shell *sh);
+
 
 #endif

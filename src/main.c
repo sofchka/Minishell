@@ -23,7 +23,7 @@ int	main(int argc, char **argv, char **envp)
 
 	if (argc != 1)
 	{
-		write(2, "No arguments needed\n", 21);
+		write(2, "\033[1;31mNo arguments needed\n", 21);
 		return (1);
 	}
 	(void)argv;
@@ -31,12 +31,13 @@ int	main(int argc, char **argv, char **envp)
 	shell.env = dup_env(envp);
 	if (!shell.env)
 	{
-		write(2, "Env init Error\n", 15);
+		write(2, "\033[1;31mEnv init Error\n", 15);
 		return (1);
 	}
 	//set_signals();
 	if (minishell_start(&shell))
 	{
+		ft_free(shell.tokens);
 		ft_free(shell.env);
 		return (1);
 	}

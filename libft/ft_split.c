@@ -12,23 +12,36 @@
 
 #include "libft.h"
 
-static size_t	word_count(char const *s, char c)
+static size_t	word_count(char const *s, char c, int i)
 {
 	size_t	count;
-	int		i;
 
-	i = 0;
 	count = 0;
 	while (s[i])
 	{
-		if (s[i] != c && (i == 0 || s[i - 1] == c))
-			count++;
-		i++;
+		while (s[i] == c)
+			i++;
+		if (!s[i])
+			break ;
+		count++;
+		if (s[i] == '\'')
+		{
+			i++;
+			while (s[i] && s[i] != '\'')
+				i++;
+			if (s[i] == '\'')
+				i++;
+		}
+		else
+		{
+			while (s[i] && s[i] != c && s[i] != '\'')
+				i++;
+		}
 	}
 	return (count);
 }
 
-static int	ft_malloc(char **result, int position, size_t len)
+static int	ft_malloc(char **result, int position, size_t len, char *start)
 {
 	result[position] = malloc(len + 1);
 	if (!result[position])
@@ -38,30 +51,52 @@ static int	ft_malloc(char **result, int position, size_t len)
 		free(result);
 		return (0);
 	}
+	ft_strlcpy(result[position], start, len + 1);
 	return (1);
 }
 
-static int	split(char **result, char const *s, char c, int i)
+static int	split_2(char **s, char c, int *qu)
 {
 	size_t	len;
-	char	*start;
 
+	len = 0;
+	while (**s && ((*qu && **s != '\'') || (!*qu && **s != c && **s != '\'')))
+	{
+		++len;
+		(*s)++;
+	}
+	if (!*qu && len == 0)
+		return (-1);
+	if (*qu && **s == '\'')
+	{
+		*qu = 0;
+		(*s)++;
+	}
+	return (len);
+}
+
+static int	split(char **result, char *s, char c, int i)
+{
+	char	*start;
+	int		qu;
+	long	len;
+
+	qu = 0;
 	while (*s)
 	{
-		len = 0;
 		while (*s == c && *s)
 			++s;
-		start = (char *)s;
-		while (*s != c && *s)
+		if (*s == '\'')
 		{
-			++len;
-			++s;
+			qu = 1;
+			s++;
 		}
-		if (len > 0)
+		start = (char *)s;
+		len = split_2(&s, c, &qu);
+		if (len != -1)
 		{
-			if (ft_malloc(result, i, len) == 0)
+			if (ft_malloc(result, i, len, start) == 0)
 				return (0);
-			ft_strlcpy(result[i], start, len + 1);
 			i++;
 		}
 	}
@@ -69,14 +104,14 @@ static int	split(char **result, char const *s, char c, int i)
 	return (1);
 }
 
-char	**ft_split(char const *s, char c)
+char	**ft_split(char *s, char c)
 {
 	char	**res;
 	size_t	len;
 
 	if (!s)
 		return (NULL);
-	len = word_count(s, c);
+	len = word_count(s, c, 0);
 	res = (char **)malloc(sizeof(char *) * (len + 1));
 	if (!res)
 		return (NULL);
@@ -87,39 +122,3 @@ char	**ft_split(char const *s, char c)
 	}
 	return (res);
 }
-/*
-#include <stdio.h>
-#include <string.h>
-
-void print_result(int success)
-{
-    if (success)
-        printf("ok\n");
-    else
-        printf("Qaq\n");
-}
-
-int compare_arrays(char **arr1, char **arr2)
-{
-    int i = 0;
-    while (arr1[i] && arr2[i]) {
-        if (strcmp(arr1[i], arr2[i]) != 0)
-            return 0;
-        i++;
-    }
-    return arr1[i] == NULL && arr2[i] == NULL;
-}
-
-int main()
-{
-	char **result;
-	result = ft_split("lorem ipsum dolor sit amet, consectetur 
-	!!!!!adapiscing elit. Sed non risus.", 'i');
-	char *expected10[] = {"lorem ", "psum dolor s", "t amet, 
-	!!!!!!consectetur adap", "sc", "ng el", "t. Sed non r", "sus.", NULL};
-	print_result(compare_arrays(result, expected10));
-	int i = 0;
-	while (result[i])
-		free(result[i++]);
-	free(result);
-}*/
