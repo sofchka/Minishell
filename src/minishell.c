@@ -37,7 +37,7 @@ char	*find_cmd(char *command, char **envp, int i, char *tmp)
 		if (cmd[0][0] != '/')
 			tmp = ft_strjoin(tmp, cmd[0], 1);
 		else
-			tmp = ft_strjoin(tmp, strrchr(*cmd, '/') + 1, 1); //leak?
+			tmp = ft_strjoin(tmp, strrchr(*cmd, '/') + 1, 1);
 		if (!tmp)
 			return (ft(paths, NULL), ft(cmd, NULL), NULL);
 		if (access(tmp, X_OK) == 0)
@@ -143,7 +143,7 @@ int	minishell_start(t_shell *shell)
 {
 	while (1)
 	{
-		shell->input = readline("\033[1;34mMiniShell $ \033[1;36m");
+		shell->input = readline("\033[1;34mMiniShell $ \033[0;37m");
 		if (!shell->input)
 			break ;
 		if (shell->input && *shell->input != '\0')
