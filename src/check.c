@@ -6,7 +6,7 @@ int	has_open_quote(const char *s)
 	char	q;
 
 	i = 0;
-	while (s[i])
+	while (s && s[i])
 	{
 		if (s[i] == '\'' || s[i] == '"')
 		{
@@ -16,11 +16,12 @@ int	has_open_quote(const char *s)
 				i++;
 			if (!s[i])
 			{
-				write(2, "\033[1;31mSyntax error: unclosed quote.\n", 31);
+				write(2, "\033[1;31mSyntax error: unclosed quote.\n", 38);
 				return (1);
 			}
 		}
-		i++;
+		if (s[i])
+			i++;
 	}
 	return (0);
 }
@@ -37,26 +38,30 @@ int	syntax_error(const char *input)
 {
 	int		i;
 	int		len;
+	int		k;
 	t_data	type;
 
 	i = 0;
-	while (input[i])
+	while (input && input[i])
 	{
 		skip_spaces(input, &i);
+		if (!input[i])
+			break ;
 		if (is_operator(&input[i], &len, &type))
 		{
 			i += len;
-			skip_spaces(input, &i);
-			if (is_operator(&input[i], &len, &type))
+			k = i;
+			skip_spaces(input, &k);
+			if (is_operator(&input[k], &len, &type))
 			{
-				ft_putstr_fd("\033[1;31msyntax error near unexpected token `", 2);
-				write(2, &input[i], len);
+				write(2, "\033[1;31mSyntax error near unexpected token `", 44);
+				write(2, &input[k], len);
 				write(2, "'\n", 2);
 				return (1);
 			}
-			else if (!input[i])
+			if (!input[k])
 			{
-				write(2, "\033[1;31msyntax error near unexpected token `newline'\n", 52);
+				write(2, "\033[1;31mSyntax error near unexpected token `newline'\n", 51);
 				return (1);
 			}
 		}

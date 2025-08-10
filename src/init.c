@@ -6,7 +6,7 @@ char	**dup_env(char **envp)
 	int		i;
 
 	i = 0;
-	while (envp[i])
+	while (envp && envp[i])
 		i++;
 	res = (char **)malloc(sizeof(char *) * (i + 1));
 	if (!res)
@@ -30,17 +30,10 @@ char	**dup_env(char **envp)
 void	init_shell(t_shell *shell)
 {
 	shell->input = NULL;
-	shell->paths = NULL;
+	shell->tokens = NULL;
+	shell->tok_count = 0;
+	shell->pipe_count = 0;
+	shell->env = NULL;
 	shell->stdin_backup = dup(STDIN_FILENO);
 	shell->stdout_backup = dup(STDOUT_FILENO);
-//...
-}
-
-void	init_2(t_shell *sh)
-{
-	sh->pipe_count = 0;
-	sh->redir_in = 0;
-	sh->redir_out = 0;
-	sh->append_out = 0;
-	sh->heredoc = 0;
 }

@@ -116,9 +116,6 @@ char	**ft_split(char *s, char c)
 	if (!res)
 		return (NULL);
 	if (split(res, s, c, 0) == 0)
-	{
-		free(res);
 		return (NULL);
-	}
 	return (res);
 }
