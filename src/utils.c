@@ -31,13 +31,17 @@ int	execute_builtin(char *str, t_shell *shell)
 		return (ft_unset(ft_split(str, ' '), shell));
 	if (ft_strncmp(arg, "env", ft_strlen(arg) + 1) == 0)
 		return (ft_env(shell));
+	if (ft_strncmp(arg, "clear", ft_strlen(arg) + 1) == 0)
+		return (system("clear"), 0);
 	return (-1);
 }
 
-int	is_builtin(char *cmd)
+int	is_builtin(char *str)
 {
-	int	result;
+	int		result;
+	char	*cmd;
 
+	cmd = simplify(str);
 	result = 0;
 	if (!cmd)
 		return (0);
@@ -52,6 +56,8 @@ int	is_builtin(char *cmd)
 	if (ft_strncmp(cmd, "unset", ft_strlen(cmd) + 1) == 0)
 		result = 1;
 	if (ft_strncmp(cmd, "env", ft_strlen(cmd) + 1) == 0)
+		result = 1;
+	if (ft_strncmp(cmd, "clear", ft_strlen(cmd) + 1) == 0)
 		result = 1;
 	return (result);
 }

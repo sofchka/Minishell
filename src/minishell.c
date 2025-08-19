@@ -20,11 +20,6 @@ void	redirections_execve(t_exec *cmds, t_vars *vars, int i, t_shell *sh)
 	}
 	if (handle_redirection(cmds))
 		ft_exit_perror("redirection failed");
-	if (is_builtin(cmds->cmd))
-	{
-		if (execute_builtin(cmds->cmd, sh) == -1)
-			ft_exit_perror("builtin execution failed");
-	}
 	vars->path = find_cmd(cmds->cmd, sh->env, 0, NULL);
 	if (!vars->path)
 		ft_exit_perror("command not found");
@@ -49,10 +44,16 @@ int	start(t_shell *sh)
 	int		i;
 
 	cmds = split_by_pipe(sh);
-	if (sh->pipe_count == 0 && cmds && cmds->cmd && cmds->next == NULL)
+	if (sh->pipe_count == 0 && sh->tok_count == 0 && cmds && cmds->cmd
+		&& cmds->next == NULL)
 	{
+		if (is_builtin(ft_split(cmds->cmd, ' ')[0]))
+		{
+			status = execute_builtin(cmds->cmd, sh);
+			return (0);
+		}
 		if (ft_strncmp(cmds->cmd, "exit", ft_strlen(cmds->cmd) + 1) == 0)
-			return (ft_exit(ft_split(cmds->cmd, ' '), sh));
+			ft_exit(ft_split(cmds->cmd, ' '), sh);
 	}
 	if (sh->pipe_count > 0)
 		vars.pfd = malloc(sizeof(int [2]) * sh->pipe_count);
@@ -75,7 +76,6 @@ int	start(t_shell *sh)
 	current = cmds;
 	while (current->cmd && i < sh->pipe_count + 1)
 	{
-		printf("Creating child process %d for command: %s %s %s\n", i, current->cmd, current->token ? current->token : "X", current->cmd2 ? current->cmd2 : "X");
 		vars.pids[i] = fork();
 		if (vars.pids[i] < 0)
 			ft_exit_perror("fork failed");
@@ -104,7 +104,5 @@ int	start(t_shell *sh)
 		free(vars.pfd);
 	if (vars.pids)
 		free(vars.pids);
-
-	write(1, "WOW finished worked pipe done\n", 30);
 	return (0);
 }
