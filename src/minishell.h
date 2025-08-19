@@ -33,6 +33,14 @@ typedef enum e_data
 	HEREDOC,
 }			t_data;
 
+typedef struct s_exec
+{
+	char			*cmd;
+	char			*cmd2;
+	char			*token;
+	struct s_exec	*next;
+}			t_exec;
+
 typedef struct s_shell
 {
 	char			**env;
@@ -42,27 +50,68 @@ typedef struct s_shell
 	int				pipe_count;
 	int				stdin_backup;
 	int				stdout_backup;
+	t_exec			*cmds;
 }			t_shell;
 
-// typedef struct s_vars
-// {
-// 	int		*pfd;
-// 	pid_t	*pids;
-// 	int		infile;
-// 	int		outfile;
-// 	char	*path;
-// 	char	**cmd;
-// }	t_vars;
+typedef struct s_vars
+{
+	int		(*pfd)[2];
+	pid_t	*pids;
+	int		infile;
+	int		outfile;
+	char	*path;
+	char	**cmd;
+}	t_vars;
 
-void		ft_exit_perror(const char *msg);
-char		**dup_env(char **envp);
-void		ft_free(char **arg);
-void		init_shell(t_shell *shell);
-void		minishell_start(t_shell *shell);
-int			token(t_shell *sh, int i, int j);
-int			start(t_shell *sh);
-int			has_open_quote(const char *s);
-int			syntax_error(const char *input);
-int			is_operator(const char *s, int *len, t_data *type);
+// frees.c
+void	ft_free(char **arg);
+void	ft_exit_perror(const char *msg);
+void	ft_free_execs(t_exec *cmds);
+
+// init.c
+char	**dup_env(char **envp);
+void	init_shell(t_shell *shell);
+
+// signals.c
+void	set_signals(void);
+
+// check.c
+int		has_open_quote(const char *s);
+int		syntax_error(const char *input);
+
+// token.c
+int		is_operator(const char *s, int *len, t_data *type);
+int		token(t_shell *sh, int i, int j);
+
+// redirections.c
+int		handle_redirection(t_exec *data);
+
+// splits.c
+t_exec	*split_by_pipe(t_shell *sh);
+
+// find_path.c
+void	ft(char **str, char *arr);
+int		find_path(char **envp, char ***path);
+char	*find_cmd(char *command, char **envp, int i, char *tmp);
+
+// minishell.c
+void	redirections_execve(t_exec *cmds, t_vars *vars, int i, t_shell *sh);
+int		start(t_shell *sh);
+char	**split_args(const char *cmd);
+
+// expend.c
+char	*expand_vars(char *input, t_shell *shell);
+
+// utils.c
+int		execute_builtin(char *argv, t_shell *shell);
+
+int		is_builtin(char *cmd);
+int		ft_echo(char *argv);
+int		ft_cd(char **argv, t_shell *shell);
+int		ft_pwd(void);
+int		ft_env(t_shell *shell);
+int		ft_exit(char **argv, t_shell *shell);
+int		ft_export(char **argv, t_shell *shell);
+int		ft_unset(char **argv, t_shell *shell);
 
 #endif

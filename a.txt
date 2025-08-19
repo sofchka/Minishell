@@ -1,0 +1,14 @@
+a.txt
+libft
+Makefile
+minishell
+README.md
+src
+subj-minishell.pdf
+a.txt
+libft
+Makefile
+minishell
+README.md
+src
+subj-minishell.pdf

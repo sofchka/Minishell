@@ -1,52 +1,50 @@
 #include "minishell.h"
 
-int	g_exit_status = 0;
+int g_exit_status;
 
-void	ft_exit_perror(const char *msg)
+void	main_loop(t_shell *shell)
 {
-	perror(msg);
-	exit(EXIT_FAILURE);
-}
+	char	*expanded;
 
-void	ft_free(char **arg)
-{
-	int	i;
-
-	if (!arg)
-		return ;
-	i = 0;
-	while (arg[i])
+	while (1)
 	{
-		free(arg[i]);
-		i++;
+		shell->input = readline("\033[1;34mMiniShell $ \033[1;36m");
+		if (!shell->input)
+		{
+			write(STDOUT_FILENO, "exit\n", 5);
+			break ;
+		}
+		if (*shell->input == '\0')
+		{
+			free(shell->input);
+			continue ;
+		}
+		add_history(shell->input);
+		expanded = expand_vars(shell->input, shell);
+		free(shell->input);
+		shell->input = expanded;
+		if (token(shell, 0, 0))
+		{
+			ft_free(shell->tokens);
+			free(shell->input);
+			continue ;
+		}
+		if (start(shell) == -1)
+			break ;
+		shell->tok_count = 0;
+		shell->pipe_count = 0;
+		free(shell->input);
+		ft_free(shell->tokens);
 	}
-	free(arg);
+	rl_clear_history();
 }
-
-static void	handling_signal(int signal)//?
-{
-	if (signal == SIGINT)
-	{
-		g_exit_status = 130;
-		write(STDOUT_FILENO, "\n", 1);
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
-	}
-}
-
-void	set_signals(void)
-{
-	signal(SIGINT, &handling_signal);
-	signal(SIGQUIT, SIG_IGN);
-}
-
 
 int	main(int argc, char **argv, char **envp)
 {
 	t_shell	shell;
 
 	(void)argv;
+	g_exit_status = 0;
 	if (argc != 1)
 	{
 		write(2, "\033[1;31mNo arguments needed\n", 28);
@@ -60,7 +58,7 @@ int	main(int argc, char **argv, char **envp)
 		return (1);
 	}
 	set_signals();
-	minishell_start(&shell);
+	main_loop(&shell);
 	ft_free(shell.env);
 	return (0);
 }

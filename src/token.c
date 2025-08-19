@@ -17,10 +17,6 @@ int	is_operator(const char *s, int *len, t_data *type)
 		return (*len = 1, *type = REDIR_IN, 1);
 	if (s[0] == '>')
 		return (*len = 1, *type = REDIR_OUT, 1);
-// if (!ft_strncmp(s, ">>", 2))
-// 	return (*len = 2, *type = APPEND, 1);
-// if (!ft_strncmp(s, "<<", 2))
-// 	return (*len = 2, *type = HEREDOC, 1);
 	return (0);
 }
 
@@ -54,11 +50,11 @@ static int	count_tokens(const char *s)
 static char	*extract_token(const char *s, int *i)
 {
 	int		start;
+	int		end;
 	int		len;
 	t_data	type;
 
 	start = *i;
-	len = 0;
 	if (is_operator(&s[*i], &len, &type))
 	{
 		*i += len;
@@ -66,7 +62,11 @@ static char	*extract_token(const char *s, int *i)
 	}
 	while (s[*i] && !is_operator(&s[*i], &len, &type))
 		(*i)++;
-	return (ft_substr(s, start, *i - start));
+	end = *i;
+	while (end > start && (s[end - 1] == ' ' || s[end - 1] == '\t'))
+		end--;
+
+	return (ft_substr(s, start, end - start));
 }
 
 int	token(t_shell *sh, int i, int j)
@@ -92,6 +92,8 @@ int	token(t_shell *sh, int i, int j)
 			sh->pipe_count++;
 		j++;
 	}
+
+
 	sh->tokens[j] = NULL;
 	return (0);
 }
