@@ -1,68 +1,64 @@
 #include "minishell.h"
 
-
-t_exec	*split_by_pipe(t_shell *sh)
+static t_exec	*new_exec_node(void)
 {
-	int		i;
-	char	*token;
+	t_exec	*node;
+
+	node = malloc(sizeof(t_exec));
+	if (!node)
+		return (NULL);
+	node->cmd = NULL;
+	node->cmd2 = NULL;
+	node->token = NULL;
+	node->heredoc_fd = -1;
+	node->next = NULL;
+	return (node);
+}
+
+static void	fill_exec_node(t_exec *cur, char *token, char **tokens, int i)
+{
+	if (token)
+	{
+		if (i > 2 && ft_strncmp(tokens[i - 2], "|", 1) != 0)
+			cur->cmd = tokens[i - 3];
+		else
+			cur->cmd = tokens[i - 2];
+		cur->cmd2 = tokens[i - 1];
+		cur->token = token;
+	}
+	else
+	{
+		cur->cmd = tokens[i - 1];
+		cur->cmd2 = NULL;
+		cur->token = NULL;
+	}
+}
+
+t_exec	*split_by_pipe(t_shell *sh, int i, char *token)
+{
 	t_exec	*head;
 	t_exec	*cur;
 
-	i = 0;
-	token = NULL;
-	head = malloc(sizeof(t_exec));
+	head = new_exec_node();
 	if (!head)
 		return (NULL);
 	cur = head;
-	cur->next = NULL;
-	cur->cmd = NULL;
-	cur->cmd2 = NULL;
-	cur->token = NULL;
 	while (sh->tokens[i])
 	{
 		if (ft_strncmp(sh->tokens[i], "<<", 2) == 0
 			|| ft_strncmp(sh->tokens[i], ">>", 2) == 0
 			|| ft_strncmp(sh->tokens[i], "<", 1) == 0
 			|| ft_strncmp(sh->tokens[i], ">", 1) == 0)
+			token = sh->tokens[i++];
+		if (sh->tokens[i] && ft_strncmp(sh->tokens[i], "|", 1) == 0)
 		{
-			token = sh->tokens[i];
-			i++;
-		}
-		if (ft_strncmp(sh->tokens[i], "|", 1) == 0)
-		{
-			if (token)
-			{
-				cur->cmd = sh->tokens[i - 3];
-				cur->cmd2 = sh->tokens[i - 1];
-				cur->token = token;
-				token = NULL;
-			}
-			else
-			{
-				cur->cmd = sh->tokens[i - 1];
-				cur->cmd2 = NULL;
-				cur->token = NULL;
-			}
-			cur->next = malloc(sizeof(t_exec));
+			fill_exec_node(cur, token, sh->tokens, i);
+			token = NULL;
+			cur->next = new_exec_node();
 			cur = cur->next;
-			cur->cmd = NULL;
-			cur->cmd2 = NULL;
-			cur->token = NULL;
-			cur->next = NULL;
 		}
 		i++;
 	}
-	if (token)
-	{
-		cur->cmd = sh->tokens[i - 3];
-		cur->cmd2 = sh->tokens[i - 1];
-		cur->token = token;
-	}
-	else
-	{
-		cur->cmd = sh->tokens[i - 1];
-		cur->cmd2 = NULL;
-		cur->token = NULL;
-	}
+	fill_exec_node(cur, token, sh->tokens, i);
 	return (head);
 }

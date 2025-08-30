@@ -28,7 +28,10 @@ void	ft_free_execs(t_exec *cmds)
 	while (cmds)
 	{
 		tmp = cmds->next;
+		if (cmds->heredoc_fd > 0)
+			close(cmds->heredoc_fd);
 		free(cmds);
 		cmds = tmp;
 	}
 }
+

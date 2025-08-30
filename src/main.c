@@ -23,16 +23,25 @@ void	main_loop(t_shell *shell)
 		expanded = expand_vars(shell->input, shell);
 		free(shell->input);
 		shell->input = expanded;
+		// printf("[%s]\n", shell->input);
 		if (token(shell, 0, 0))
 		{
-			ft_free(shell->tokens);
 			free(shell->input);
 			continue ;
 		}
+		// int i = 0;
+		// while (shell->tokens[i])
+		// {
+		// 	printf(" [%s]\n", shell->tokens[i]);
+		// 	i++;
+		// }
 		if (start(shell) == -1)
 			break ;
 		shell->tok_count = 0;
 		shell->pipe_count = 0;
+		shell->heredocs = 0;
+		shell->redirs = 0;
+		shell->status_count = 0;
 		free(shell->input);
 		ft_free(shell->tokens);
 	}
@@ -60,5 +69,5 @@ int	main(int argc, char **argv, char **envp)
 	set_signals();
 	main_loop(&shell);
 	ft_free(shell.env);
-	return (0);
+	return (g_exit_status);
 }

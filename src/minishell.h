@@ -20,6 +20,7 @@
 # include <readline/readline.h>   // readline, rl_clear_history, 
 //rl_on_new_line, rl_replace_line, rl_redisplay
 # include <readline/history.h>    // add_history
+# include <errno.h>
 
 extern int	g_exit_status;
 
@@ -38,6 +39,7 @@ typedef struct s_exec
 	char			*cmd;
 	char			*cmd2;
 	char			*token;
+	int				heredoc_fd;
 	struct s_exec	*next;
 }			t_exec;
 
@@ -48,6 +50,9 @@ typedef struct s_shell
 	char			**tokens;
 	int				tok_count;
 	int				pipe_count;
+	int				heredocs;
+	int				redirs;
+	int				status_count;
 	int				stdin_backup;
 	int				stdout_backup;
 	t_exec			*cmds;
@@ -77,7 +82,7 @@ void	set_signals(void);
 
 // check.c
 int		has_open_quote(const char *s);
-int		syntax_error(const char *input);
+int		syntax_error(t_shell *sh);
 
 // token.c
 int		is_operator(const char *s, int *len, t_data *type);
@@ -85,19 +90,21 @@ int		token(t_shell *sh, int i, int j);
 
 // redirections.c
 int		handle_redirection(t_exec *data);
+int		redir_output(char *file, char *type, int dup);
 
 // splits.c
-t_exec	*split_by_pipe(t_shell *sh);
+t_exec	*split_by_pipe(t_shell *sh, int i, char *token);
+// char	**ft_split_2(const char *s, char c);
 
 // find_path.c
-void	ft(char **str, char *arr);
+void	ft(char **str);
 int		find_path(char **envp, char ***path);
 char	*find_cmd(char *command, char **envp, int i, char *tmp);
 
 // minishell.c
 void	redirections_execve(t_exec *cmds, t_vars *vars, int i, t_shell *sh);
+void	restore_std(t_shell *sh);
 int		start(t_shell *sh);
-char	**split_args(const char *cmd);
 
 // expend.c
 char	*expand_vars(char *input, t_shell *shell);

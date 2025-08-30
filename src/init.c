@@ -34,6 +34,10 @@ void	init_shell(t_shell *shell)
 	shell->tok_count = 0;
 	shell->pipe_count = 0;
 	shell->env = NULL;
+	shell->cmds = NULL;
+	shell->heredocs = 0;
+	shell->redirs = 0;
+	shell->status_count = 0;
 	shell->stdin_backup = dup(STDIN_FILENO);
 	shell->stdout_backup = dup(STDOUT_FILENO);
 }

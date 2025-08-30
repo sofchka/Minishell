@@ -91,34 +91,3 @@ int ft_env(t_shell *shell)
 	}
 	return (0);
 }
-
-int	ft_exit(char **argv, t_shell *shell)
-{
-	int	status;
-
-	status = g_exit_status;
-	ft_putstr_fd("exit\n", STDOUT_FILENO);
-	if (argv[1] && argv[2])
-	{
-		ft_putstr_fd("exit: too many arguments\n", STDERR_FILENO);
-		return (1);
-	}
-	if (argv[1])
-	{
-		if (!ft_isdigit(argv[1][0]))
-		{
-			ft_putstr_fd("exit: ", STDERR_FILENO);
-			ft_putstr_fd(argv[1], STDERR_FILENO);
-			ft_putstr_fd(": numeric argument required\n", STDERR_FILENO);
-			status = 2;
-		}
-		else
-			status = ft_atoi(argv[1]);
-	}
-	ft_free(shell->env);
-	free(shell->input);
-	ft_free(shell->tokens);
-	close(shell->stdin_backup);
-	close(shell->stdout_backup);
-	exit(status);
-}

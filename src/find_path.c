@@ -1,11 +1,9 @@
 #include "minishell.h"
 
-void	ft(char **str, char *arr)
+void	ft(char **str)
 {
 	int	i;
 
-	if (arr)
-		free(arr);
 	i = 0;
 	while (str[i])
 	{
@@ -27,6 +25,13 @@ int	find_path(char **envp, char ***path)
 	return (1);
 }
 
+char	*full_cmd(char **cmd)
+{
+	if (access(cmd[0], X_OK) == 0)
+		return (ft_strdup(cmd[0]));
+	return (ft(cmd), NULL);
+}
+
 char	*find_cmd(char *command, char **envp, int i, char *tmp)
 {
 	char	**paths;
@@ -34,26 +39,23 @@ char	*find_cmd(char *command, char **envp, int i, char *tmp)
 
 	if (find_path(envp, &paths) == 0)
 		return (NULL);
+	cmd = ft_split(command, ' ');
+	if (!cmd || !cmd[0])
+		return (ft(paths), NULL);
+	if (cmd[0][0] == '/')
+		return (ft(paths), full_cmd(cmd));
 	while (paths[i])
 	{
-		cmd = ft_split(command, ' ');
-		// if (access(cmd[0], X_OK) == 0)
-		// 	return (ft(paths, NULL), ft(cmd, NULL), ft_strdup(cmd[0]));
-		if (!cmd || !cmd[0])
-			return (ft(paths, NULL), NULL);
 		tmp = ft_strjoin(paths[i], "/", 0);
 		if (!tmp)
-			return (ft(paths, NULL), ft(cmd, NULL), NULL);
-		if (cmd[0][0] != '/')
-			tmp = ft_strjoin(tmp, cmd[0], 1);
-		else
-			tmp = ft_strjoin(tmp, strrchr(*cmd, '/') + 1, 1);
+			return (ft(paths), ft(cmd), NULL);
+		tmp = ft_strjoin(tmp, cmd[0], 1);
 		if (!tmp)
-			return (ft(paths, NULL), ft(cmd, NULL), NULL);
+			return (ft(paths), ft(cmd), NULL);
 		if (access(tmp, X_OK) == 0)
-			return (ft(paths, NULL), ft(cmd, NULL), tmp);
-		ft(cmd, tmp);
+			return (ft(paths), ft(cmd), tmp);
+		free(tmp);
 		i++;
 	}
-	return (ft(paths, NULL), NULL);
+	return (ft(paths), ft(cmd), NULL);
 }

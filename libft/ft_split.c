@@ -12,10 +12,13 @@
 
 #include "libft.h"
 
-static size_t	word_count(char const *s, char c, int i)
+static size_t	word_count(const char *s, char c)
 {
 	size_t	count;
+	int		i;
+	char	quote;
 
+	i = 0;
 	count = 0;
 	while (s[i])
 	{
@@ -24,98 +27,74 @@ static size_t	word_count(char const *s, char c, int i)
 		if (!s[i])
 			break ;
 		count++;
-		if (s[i] == '\'')
+		if (s[i] == '\'' || s[i] == '"')
 		{
-			i++;
-			while (s[i] && s[i] != '\'')
+			quote = s[i++];
+			while (s[i] && s[i] != quote)
 				i++;
-			if (s[i] == '\'')
+			if (s[i] == quote)
 				i++;
 		}
 		else
 		{
-			while (s[i] && s[i] != c && s[i] != '\'')
+			while (s[i] && s[i] != c && s[i] != '\'' && s[i] != '"')
 				i++;
 		}
 	}
 	return (count);
 }
 
-static int	ft_malloc(char **result, int position, size_t len, char *start)
+static char	*extract_token(const char **s, char c)
 {
-	result[position] = malloc(len + 1);
-	if (!result[position])
-	{
-		while (position >= 0)
-			free(result[position--]);
-		free(result);
-		return (0);
-	}
-	ft_strlcpy(result[position], start, len + 1);
-	return (1);
-}
+	char	*buf;
+	int		i;
+	char	quote;
 
-static int	split_2(char **s, char c, int *qu)
-{
-	size_t	len;
-
-	len = 0;
-	while (**s && ((*qu && **s != '\'') || (!*qu && **s != c && **s != '\'')))
+	i = 0;
+	buf = malloc(ft_strlen(*s) + 1);
+	if (!buf)
+		return (NULL);
+	while (**s && **s != c)
 	{
-		++len;
-		(*s)++;
-	}
-	if (!*qu && len == 0)
-		return (-1);
-	if (*qu && **s == '\'')
-	{
-		*qu = 0;
-		(*s)++;
-	}
-	return (len);
-}
-
-static int	split(char **result, char *s, char c, int i)
-{
-	char	*start;
-	int		qu;
-	long	len;
-
-	qu = 0;
-	while (*s)
-	{
-		while (*s == c && *s)
-			++s;
-		if (*s == '\'')
+		if (**s == '\'' || **s == '"')
 		{
-			qu = 1;
-			s++;
+			quote = *(*s)++;
+			while (**s && **s != quote)
+				buf[i++] = *(*s)++;
+			if (**s == quote)
+				(*s)++;
 		}
-		start = (char *)s;
-		len = split_2(&s, c, &qu);
-		if (len != -1)
-		{
-			if (ft_malloc(result, i, len, start) == 0)
-				return (0);
-			i++;
-		}
+		else
+			buf[i++] = *(*s)++;
 	}
-	result[i] = NULL;
-	return (1);
+	buf[i] = '\0';
+	return (buf);
 }
 
 char	**ft_split(char *s, char c)
 {
 	char	**res;
 	size_t	len;
+	size_t	i = 0;
 
 	if (!s)
 		return (NULL);
-	len = word_count(s, c, 0);
-	res = (char **)malloc(sizeof(char *) * (len + 1));
+	len = word_count(s, c);
+	res = malloc(sizeof(char *) * (len + 1));
 	if (!res)
 		return (NULL);
-	if (split(res, s, c, 0) == 0)
-		return (NULL);
+	while (*s)
+	{
+		while (*s == c)
+			s++;
+		if (*s)
+		{
+			res[i] = extract_token((const char **)&s, c);
+			if (!res[i])
+				return (NULL);
+			i++;
+		}
+	}
+	res[i] = NULL;
 	return (res);
 }
