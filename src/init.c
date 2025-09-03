@@ -37,7 +37,17 @@ void	init_shell(t_shell *shell)
 	shell->cmds = NULL;
 	shell->heredocs = 0;
 	shell->redirs = 0;
-	shell->status_count = 0;
 	shell->stdin_backup = dup(STDIN_FILENO);
 	shell->stdout_backup = dup(STDOUT_FILENO);
+}
+
+void	reinit(t_shell **shell)
+{
+	(*shell)->tok_count = 0;
+	(*shell)->pipe_count = 0;
+	(*shell)->heredocs = 0;
+	(*shell)->redirs = 0;
+	free((*shell)->input);
+	ft_free((*shell)->tokens);
+	restore_std(*shell);
 }

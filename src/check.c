@@ -26,15 +26,38 @@ int	has_open_quote(const char *s)
 	return (0);
 }
 
+static int	if_case(t_shell *sh, int i, int *len)
+{
+	t_data	type;
+
+	if (((ft_strncmp(sh->tokens[i], ">", 1) == 0
+				|| ft_strncmp(sh->tokens[i], ">>", 2) == 0)
+			&& (is_operator(sh->tokens[i + 1], len, &type)
+				|| !sh->tokens[i + 1]))
+		|| (ft_strncmp(sh->tokens[i], "<", 1) == 0
+			&& (is_operator(sh->tokens[i + 1], len, &type)
+				|| !sh->tokens[i + 1]))
+		|| (ft_strncmp(sh->tokens[i], "<<", 2) == 0
+			&& (is_operator(sh->tokens[i + 1], len, &type)
+				|| !sh->tokens[i + 1])))
+		return (1);
+	return (0);
+}
+
+static int	pr_error(t_shell *sh, int i, int *len)
+{
+	write(2, "shell: syntax error near unexpected token `", 44);
+	write(2, sh->tokens[i + 1], *len);
+	write(2, "'\n", 2);
+	return (1);
+}
+
 int	syntax_error(t_shell *sh)
 {
 	int		i;
 	int		len;
-	t_data	type;
-	int		res;
 
 	i = 0;
-	res = 0;
 	while (sh->tokens[i])
 	{
 		if (i == 0 && (ft_strncmp(sh->tokens[i], "|", 1) == 0))
@@ -42,24 +65,18 @@ int	syntax_error(t_shell *sh)
 			write(2, "shell: syntax error near unexpected token `|'\n", 46);
 			return (1);
 		}
-		else if (((ft_strncmp(sh->tokens[i], ">", 1) == 0 || ft_strncmp(sh->tokens[i], ">>", 2) == 0) && (is_operator(sh->tokens[i + 1], &len, &type) || !sh->tokens[i + 1]))
-			|| (ft_strncmp(sh->tokens[i], "<", 1) == 0 && (is_operator(sh->tokens[i + 1], &len, &type) || !sh->tokens[i + 1]))
-			|| (ft_strncmp(sh->tokens[i], "<<", 2) == 0 && (is_operator(sh->tokens[i + 1], &len, &type) || !sh->tokens[i + 1])))
+		else if (if_case(sh, i, &len))
 		{
 			if (!sh->tokens[i + 1])
 			{
-				write(2, "shell: syntax error near unexpected token `newline'\n", 53);
+				write(2, "shell: syntax error near ", 26);
+				write(2, "unexpected token `newline'\n", 28);
 				return (1);
 			}
 			else
-			{
-				write(2, "shell: syntax error near unexpected token `", 44);
-				write(2, sh->tokens[i + 1], len);
-				write(2, "'\n", 2);
-				return (1);
-			}
+				return (pr_error(sh, i, &len));
 		}
 		i++;
 	}
-	return (res);
+	return (0);
 }

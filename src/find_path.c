@@ -27,9 +27,11 @@ int	find_path(char **envp, char ***path)
 
 char	*full_cmd(char **cmd)
 {
+	if (access(cmd[0], F_OK) != 0)
+		return (ft(cmd), NULL);
 	if (access(cmd[0], X_OK) == 0)
 		return (ft_strdup(cmd[0]));
-	return (ft(cmd), NULL);
+	return (ft_strdup(cmd[0]));
 }
 
 char	*find_cmd(char *command, char **envp, int i, char *tmp)
@@ -42,7 +44,7 @@ char	*find_cmd(char *command, char **envp, int i, char *tmp)
 	cmd = ft_split(command, ' ');
 	if (!cmd || !cmd[0])
 		return (ft(paths), NULL);
-	if (cmd[0][0] == '/')
+	if (ft_strchr(cmd[0], '/'))
 		return (ft(paths), full_cmd(cmd));
 	while (paths[i])
 	{

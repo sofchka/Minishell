@@ -52,7 +52,6 @@ typedef struct s_shell
 	int				pipe_count;
 	int				heredocs;
 	int				redirs;
-	int				status_count;
 	int				stdin_backup;
 	int				stdout_backup;
 	t_exec			*cmds;
@@ -76,6 +75,7 @@ void	ft_free_execs(t_exec *cmds);
 // init.c
 char	**dup_env(char **envp);
 void	init_shell(t_shell *shell);
+void	reinit(t_shell **shell);
 
 // signals.c
 void	set_signals(void);
@@ -85,7 +85,6 @@ int		has_open_quote(const char *s);
 int		syntax_error(t_shell *sh);
 
 // token.c
-int		is_operator(const char *s, int *len, t_data *type);
 int		token(t_shell *sh, int i, int j);
 
 // redirections.c
@@ -94,7 +93,6 @@ int		redir_output(char *file, char *type, int dup);
 
 // splits.c
 t_exec	*split_by_pipe(t_shell *sh, int i, char *token);
-// char	**ft_split_2(const char *s, char c);
 
 // find_path.c
 void	ft(char **str);
@@ -103,22 +101,21 @@ char	*find_cmd(char *command, char **envp, int i, char *tmp);
 
 // minishell.c
 void	redirections_execve(t_exec *cmds, t_vars *vars, int i, t_shell *sh);
-void	restore_std(t_shell *sh);
 int		start(t_shell *sh);
 
 // expend.c
 char	*expand_vars(char *input, t_shell *shell);
 
 // utils.c
-int		execute_builtin(char *argv, t_shell *shell);
+int		is_operator(const char *s, int *len, t_data *type);
+void	print_error(const char *arg, const char *msg);
+void	restore_std(t_shell *sh);
+char	*ft_join(char *a, char *b, char *c);
 
-int		is_builtin(char *cmd);
-int		ft_echo(char *argv);
-int		ft_cd(char **argv, t_shell *shell);
-int		ft_pwd(void);
-int		ft_env(t_shell *shell);
+// exit.c
 int		ft_exit(char **argv, t_shell *shell);
-int		ft_export(char **argv, t_shell *shell);
-int		ft_unset(char **argv, t_shell *shell);
+
+// heredoc.c
+void	herdoc_handle(t_shell *sh, t_exec **data, int count);
 
 #endif

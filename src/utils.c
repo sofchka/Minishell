@@ -1,63 +1,55 @@
 #include "minishell.h"
 
-static char	*simplify(char *str)
+void	restore_std(t_shell *sh)
 {
-	char	*last;
-
-	if (!str)
-		return (NULL);
-	last = ft_strrchr(str, '/');
-	if (last && *(last + 1) != '\0')
-		return (last + 1);
-	return (str);
+	if (dup2(sh->stdin_backup, STDIN_FILENO) == -1)
+		ft_exit_perror("dup2 restore stdin");
+	if (dup2(sh->stdout_backup, STDOUT_FILENO) == -1)
+		ft_exit_perror("dup2 restore stdout");
 }
 
-int	execute_builtin(char *str, t_shell *shell)
+void	print_error(const char *arg, const char *msg)
 {
-	char	*arg;
-
-	arg = simplify(str);
-	if (!arg || !arg[0])
-		return (-1);
-	if (ft_strncmp(arg, "echo", ft_strlen(arg) + 1) == 0)
-		return (ft_echo(str));
-	if (ft_strncmp(arg, "cd", ft_strlen(arg) + 1) == 0)
-		return (ft_cd(ft_split(str, ' '), shell));
-	if (ft_strncmp(arg, "pwd", ft_strlen(arg) + 1) == 0)
-		return (ft_pwd());
-	if (ft_strncmp(arg, "export", ft_strlen(arg) + 1) == 0)
-		return (ft_export(ft_split(str, ' '), shell));
-	if (ft_strncmp(arg, "unset", ft_strlen(arg) + 1) == 0)
-		return (ft_unset(ft_split(str, ' '), shell));
-	if (ft_strncmp(arg, "env", ft_strlen(arg) + 1) == 0)
-		return (ft_env(shell));
-	if (ft_strncmp(arg, "clear", ft_strlen(arg) + 1) == 0)
-		return (system("clear"), 0);
-	return (-1);
+	ft_putstr_fd("shell: ", STDERR_FILENO);
+	if (arg)
+	{
+		ft_putstr_fd(arg, STDERR_FILENO);
+		ft_putstr_fd(": ", STDERR_FILENO);
+	}
+	ft_putstr_fd(msg, STDERR_FILENO);
+	ft_putstr_fd("\n", STDERR_FILENO);
 }
 
-int	is_builtin(char *str)
+int	is_operator(const char *s, int *len, t_data *type)
 {
-	int		result;
-	char	*cmd;
-
-	cmd = simplify(str);
-	result = 0;
-	if (!cmd)
+	if (!s || !*s)
 		return (0);
-	if (ft_strncmp(cmd, "echo", ft_strlen(cmd) + 1) == 0)
-		result = 1;
-	if (ft_strncmp(cmd, "cd", ft_strlen(cmd) + 1) == 0)
-		result = 1;
-	if (ft_strncmp(cmd, "pwd", ft_strlen(cmd) + 1) == 0)
-		result = 1;
-	if (ft_strncmp(cmd, "export", ft_strlen(cmd) + 1) == 0)
-		result = 1;
-	if (ft_strncmp(cmd, "unset", ft_strlen(cmd) + 1) == 0)
-		result = 1;
-	if (ft_strncmp(cmd, "env", ft_strlen(cmd) + 1) == 0)
-		result = 1;
-	if (ft_strncmp(cmd, "clear", ft_strlen(cmd) + 1) == 0)
-		result = 1;
-	return (result);
+	if (s[0] == '|' && s[1] == '|')
+		return (*len = 2, *type = PIPE, 1);
+	if (s[0] == '>' && s[1] == '>')
+		return (*len = 2, *type = APPEND, 1);
+	if (s[0] == '<' && s[1] == '<')
+		return (*len = 2, *type = HEREDOC, 1);
+	if (s[0] == '|')
+		return (*len = 1, *type = PIPE, 1);
+	if (s[0] == '<')
+		return (*len = 1, *type = REDIR_IN, 1);
+	if (s[0] == '>')
+		return (*len = 1, *type = REDIR_OUT, 1);
+	return (0);
+}
+
+char	*ft_join(char *a, char *b, char *c)
+{
+	char	*res;
+
+	if (a == NULL)
+		res = ft_strjoin("shell: ", b, 0);
+	else
+	{
+		res = ft_strjoin(a, ": ", 0);
+		res = ft_strjoin(res, b, 1);
+	}
+	res = ft_strjoin(res, c, 1);
+	return (res);
 }

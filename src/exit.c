@@ -25,11 +25,31 @@ long	ft_atol(const char *str)
 	return (sign * result);
 }
 
+void	ft_exit_loop(char **argv)
+{
+	int		i;
+
+	i = 0;
+	while (argv[1][i])
+	{
+		if (i == 0 && (argv[1][i] == '-' || argv[1][i] == '+'))
+			i++;
+		if (!ft_isdigit(argv[1][i]))
+		{
+			ft_putstr_fd("exit: ", STDERR_FILENO);
+			ft_putstr_fd(argv[1], STDERR_FILENO);
+			ft_putstr_fd(": numeric argument required\n", STDERR_FILENO);
+			exit(255);
+		}
+		i++;
+	}
+}
+
+
 int	ft_exit(char **argv, t_shell *shell)
 {
 	int		status;
 	long	num;
-	int		i;
 
 	status = g_exit_status;
 	ft_putstr_fd("exit\n", STDOUT_FILENO);
@@ -41,20 +61,7 @@ int	ft_exit(char **argv, t_shell *shell)
 			exit(1); //or return(1); (for my mac its return)
 		}
 		num = ft_atol(argv[1]);
-		i = 0;
-		while (argv[1][i])
-		{
-			if (i == 0 && (argv[1][i] == '-' || argv[1][i] == '+'))
-				i++;
-			if (!ft_isdigit(argv[1][i]))
-			{
-				ft_putstr_fd("exit: ", STDERR_FILENO);
-				ft_putstr_fd(argv[1], STDERR_FILENO);
-				ft_putstr_fd(": numeric argument required\n", STDERR_FILENO);
-				exit(255);
-			}
-			i++;
-		}
+		ft_exit_loop(argv);
 		status = (int)(num % 256);
 		if (status < 0)
 			status += 256;

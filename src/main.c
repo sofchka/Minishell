@@ -2,10 +2,8 @@
 
 int g_exit_status;
 
-void	main_loop(t_shell *shell)
+void	main_loop(t_shell *shell, char *expanded)
 {
-	char	*expanded;
-
 	while (1)
 	{
 		shell->input = readline("\033[1;34mMiniShell $ \033[1;36m");
@@ -23,7 +21,6 @@ void	main_loop(t_shell *shell)
 		expanded = expand_vars(shell->input, shell);
 		free(shell->input);
 		shell->input = expanded;
-		// printf("[%s]\n", shell->input);
 		if (token(shell, 0, 0))
 		{
 			free(shell->input);
@@ -37,15 +34,8 @@ void	main_loop(t_shell *shell)
 		// }
 		if (start(shell) == -1)
 			break ;
-		shell->tok_count = 0;
-		shell->pipe_count = 0;
-		shell->heredocs = 0;
-		shell->redirs = 0;
-		shell->status_count = 0;
-		free(shell->input);
-		ft_free(shell->tokens);
+		reinit(&shell);
 	}
-	rl_clear_history();
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -67,7 +57,8 @@ int	main(int argc, char **argv, char **envp)
 		return (1);
 	}
 	set_signals();
-	main_loop(&shell);
+	main_loop(&shell, NULL);
+	rl_clear_history();
 	ft_free(shell.env);
 	return (g_exit_status);
 }

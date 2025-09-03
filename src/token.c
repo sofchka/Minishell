@@ -1,24 +1,5 @@
 #include "minishell.h"
 
-int	is_operator(const char *s, int *len, t_data *type)
-{
-	if (!s || !*s)
-		return (0);
-	if (s[0] == '|' && s[1] == '|')
-		return (*len = 2, *type = PIPE, 1);
-	if (s[0] == '>' && s[1] == '>')
-		return (*len = 2, *type = APPEND, 1);
-	if (s[0] == '<' && s[1] == '<')
-		return (*len = 2, *type = HEREDOC, 1);
-	if (s[0] == '|')
-		return (*len = 1, *type = PIPE, 1);
-	if (s[0] == '<')
-		return (*len = 1, *type = REDIR_IN, 1);
-	if (s[0] == '>')
-		return (*len = 1, *type = REDIR_OUT, 1);
-	return (0);
-}
-
 static int	skip_quotes(const char *s, int *i)
 {
 	char	quote;
@@ -92,16 +73,8 @@ static char	*extract_token(const char *s, int *i, int start, int end)
 	return (ft_substr(s, start, end - start));
 }
 
-int	token(t_shell *sh, int i, int j)
+static int	token_loop(t_shell *sh, int i, int j)
 {
-	if (has_open_quote(sh->input))
-		return (1);
-	sh->tok_count = count_tokens(sh->input, 0);
-	if (sh->tok_count == 0)
-		return (1);
-	sh->tokens = malloc(sizeof(char *) * (sh->tok_count + 3));
-	if (!sh->tokens)
-		return (1);
 	while (sh->input[i])
 	{
 		while (sh->input[i] == ' ' || sh->input[i] == '\t')
@@ -121,12 +94,26 @@ int	token(t_shell *sh, int i, int j)
 				|| j == 0))
 		{
 			sh->tokens[j + 1] = sh->tokens[j];
-			sh->tokens[j] = ft_strdup("-");
-			j++;
+			sh->tokens[j++] = ft_strdup("-");
 		}
 		j++;
 	}
 	sh->tokens[j] = NULL;
+	return (0);
+}
+
+int	token(t_shell *sh, int i, int j)
+{
+	if (has_open_quote(sh->input))
+		return (1);
+	sh->tok_count = count_tokens(sh->input, 0);
+	if (sh->tok_count == 0)
+		return (1);
+	sh->tokens = malloc(sizeof(char *) * (sh->tok_count + 3));
+	if (!sh->tokens)
+		return (1);
+	if (token_loop(sh, i, j))
+		return (1);
 	if (syntax_error(sh))
 	{
 		ft_free(sh->tokens);

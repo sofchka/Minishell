@@ -19,7 +19,7 @@ void	*ft_realloc(void *ptr, size_t size)
 	return (new_ptr);
 }
 
-static char	*get_env_value(char *name, t_shell *shell, int start)
+static char	*get_env_value(char *name, t_shell *shell, int start, char *tmp)
 {
 	size_t	len;
 	int		i;
@@ -35,9 +35,9 @@ static char	*get_env_value(char *name, t_shell *shell, int start)
 		if (start > 0 && ((shell->input[start] == '<'
 					&& shell->input[start - 1] == '<')))
 			return (ft_strjoin("$", name, 0));
-		return (ft_strjoin(ft_itoa(g_exit_status), &name[1], 0));
+		tmp = ft_strjoin(ft_itoa(g_exit_status), &name[1], 0);
+		return (g_exit_status = 0, tmp);
 	}
-	i = 0;
 	while (shell->env[i])
 	{
 		if (ft_strncmp(shell->env[i], name, len) == 0
@@ -47,6 +47,8 @@ static char	*get_env_value(char *name, t_shell *shell, int start)
 	}
 	return (ft_strdup(""));
 }
+
+
 
 static char	*expand_loop(char *input, t_shell *shell, char *result, size_t *i, size_t *j, size_t result_size)
 {
@@ -74,7 +76,7 @@ static char	*expand_loop(char *input, t_shell *shell, char *result, size_t *i, s
 			var = ft_substr(input, start, *i - start);
 			if (!var)
 				return (result);
-			value = get_env_value(var, shell, start - 2);
+			value = get_env_value(var, shell, start - 2, NULL);
 			if (!value)
 			{
 				free(var);
@@ -122,12 +124,10 @@ char	*expand_vars(char *input, t_shell *shell)
 	i = 0;
 	if (!input || !shell)
 		return (ft_strdup(""));
-
 	result_size = ft_strlen(input) * 2 + 1;
 	result = ft_calloc(1, result_size);
 	if (!result)
 		return (NULL);
-
 	result = expand_loop(input, shell, result, &i, &j, result_size);
 	return (result);
 }

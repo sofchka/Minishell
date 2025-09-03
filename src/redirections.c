@@ -19,9 +19,10 @@ int	redir_output(char *file, char *type, int dup)
 {
 	int	fd;
 
-	if (type[1] == '\0')
+	fd = -1;
+	if (ft_strncmp(type, ">", 2) == 0)
 		fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	else
+	else if (ft_strncmp(type, ">>", 2) == 0)
 		fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd < 0)
 	{
