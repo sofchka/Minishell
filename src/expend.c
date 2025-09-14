@@ -35,7 +35,7 @@ static char	*get_env_value(char *name, t_shell *shell, int start, char *tmp)
 		if (start > 0 && ((shell->input[start] == '<'
 					&& shell->input[start - 1] == '<')))
 			return (ft_strjoin("$", name, 0));
-		tmp = ft_strjoin(ft_itoa(g_exit_status), &name[1], 0);
+		tmp = ft_strjoin(ft_itoa(g_exit_status), &name[1], 1);
 		return (g_exit_status = 0, tmp);
 	}
 	while (shell->env[i])

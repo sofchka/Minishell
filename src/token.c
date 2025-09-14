@@ -15,6 +15,44 @@ static int	skip_quotes(const char *s, int *i)
 	return (0);
 }
 
+// static int	count_tokens(const char *s, int count)
+// {
+// 	int		len;
+// 	t_data	type;
+// 	int		i;
+
+// 	i = 0;
+// 	while (s[i])
+// 	{
+// 		while (s[i] == ' ' || s[i] == '\t')
+// 			i++;
+// 		if (!s[i])
+// 			break ;
+// 		if (is_operator(&s[i], &len, &type))
+// 		{
+// 			// normal operator
+// 			count++;
+
+// 			// heredoc or input redirection: might need placeholder '-'
+// 			if ((ft_strncmp(&s[i], "<<", 2) == 0)
+// 				|| (ft_strncmp(&s[i], "<", 1) == 0))
+// 				count++;  // reserve space for the "-"
+// 			i += len;
+// 		}
+// 		else
+// 		{
+// 			while (s[i] && !is_operator(&s[i], &len, &type))
+// 			{
+// 				if (s[i] == '"' || s[i] == '\'')
+// 					skip_quotes(s, &i);
+// 				i++;
+// 			}
+// 			count++;
+// 		}
+// 	}
+// 	return (count);
+// }
+
 static int	count_tokens(const char *s, int count)
 {
 	int		len;

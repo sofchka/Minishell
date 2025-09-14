@@ -39,12 +39,24 @@ void	ft_exit_loop(char **argv)
 			ft_putstr_fd("exit: ", STDERR_FILENO);
 			ft_putstr_fd(argv[1], STDERR_FILENO);
 			ft_putstr_fd(": numeric argument required\n", STDERR_FILENO);
-			exit(255);
+			ft_free(argv);
+			exit(2);
 		}
 		i++;
 	}
 }
 
+int	isnumeric(char *arg)
+{
+	int	i;
+
+	i = 0;
+	while (arg[i] && ft_isdigit(arg[i]))
+		i++;
+	if (!arg[i])
+		return (1);
+	return (0);
+}
 
 int	ft_exit(char **argv, t_shell *shell)
 {
@@ -55,10 +67,10 @@ int	ft_exit(char **argv, t_shell *shell)
 	ft_putstr_fd("exit\n", STDOUT_FILENO);
 	if (argv[0] && argv[1])
 	{
-		if (argv[2])//when exit NUM strings -> too many args
-		{//but if exit strings -> exit with print numeric needed
+		if (argv[2] && isnumeric(argv[1]))
+		{
 			ft_putstr_fd("exit: too many arguments\n", STDERR_FILENO);
-			exit(1); //or return(1); (for my mac its return)
+			return (g_exit_status = 1, ft_free(argv), 1);
 		}
 		num = ft_atol(argv[1]);
 		ft_exit_loop(argv);
@@ -71,5 +83,6 @@ int	ft_exit(char **argv, t_shell *shell)
 	ft_free(shell->tokens);
 	close(shell->stdin_backup);
 	close(shell->stdout_backup);
+	ft_free(argv);
 	exit(status);
 }
