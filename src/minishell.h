@@ -67,6 +67,19 @@ typedef struct s_vars
 	char	**cmd;
 }	t_vars;
 
+//for expand.c
+typedef struct s_exp
+{
+	char	*in;
+	char	*out;
+	size_t	i;
+	size_t	j;
+	size_t	cap;
+	int		sq;
+	int		dq;
+	t_shell	*sh;
+}	t_exp;
+
 // frees.c
 void	ft_free(char **arg);
 void	ft_exit_perror(const char *msg);
@@ -105,6 +118,13 @@ int		start(t_shell *sh);
 
 // expend.c
 char	*expand_vars(char *input, t_shell *shell);
+
+// expend_2.c
+char	*get_env_value(char *name, t_shell *shell);
+size_t	parse_var_name(const char *s, size_t *is_qmark);
+int		buf_grow(t_exp *e, size_t extra);
+int		copy_heredoc(t_exp *e, char q);
+int		handle_quote(t_exp *e);
 
 // utils.c
 int		is_operator(const char *s, int *len, t_data *type);

@@ -60,5 +60,19 @@ t_exec	*split_by_pipe(t_shell *sh, int i, char *token)
 		i++;
 	}
 	fill_exec_node(cur, token, sh->tokens, i);
+
+	t_exec	*tmp;
+
+	tmp = head;
+	while (tmp)
+	{
+		printf("NODE: cmd=[%s] cmd2=[%s] token=[%s]\n",
+			tmp->cmd ? tmp->cmd : "NULL",
+			tmp->cmd2 ? tmp->cmd2 : "NULL",
+			tmp->token ? tmp->token : "NULL");
+		tmp = tmp->next;
+	}
+
+
 	return (head);
 }

@@ -1,9 +1,39 @@
 #include "minishell.h"
 
+static char	*strip_quotes(const char *s)
+{
+	int		i;
+	int		start;
+	char	q;
+	char	*res;
+
+	if (!s)
+		return (NULL);
+	res = ft_strdup("");
+	i = 0;
+	while (s[i])
+	{
+		if (s[i] == '\'' || s[i] == '"')
+		{
+			q = s[i++];
+			start = i;
+			while (s[i] && s[i] != q)
+				i++;
+			res = ft_strjoin(res, ft_substr(s, start, i - start), 3);
+			if (s[i])
+				i++;
+		}
+		else
+			res = ft_strjoin(res, ft_substr(s, i++, 1), 3);
+	}
+	return (res);
+}
+
 static void	write_heredoc_input(int fd, char *delimiter)
 {
 	char	*line;
 
+	printf("heredoc> Delimiter is [%s]\n", delimiter);
 	while (1)
 	{
 		line = readline("> ");
@@ -27,7 +57,7 @@ static char	*heredoc_check_cmd(t_exec *data, char **tmp, t_shell *sh)
 	i = 1;
 	res = NULL;
 	path = find_cmd(data->cmd, sh->env, 0, NULL);
-	if (tmp[1] && data->cmd[0] == '-')
+	if (tmp[1] && data->cmd[0] == ' ')
 		res = ft_join(NULL, tmp[1], ": command not found\n");
 	else if (tmp[1] && data->cmd)
 	{
@@ -38,7 +68,7 @@ static char	*heredoc_check_cmd(t_exec *data, char **tmp, t_shell *sh)
 			res = ft_strjoin(res, ft_join(data->cmd, tmp[i++],
 						": No such file or directory\n"), 3);
 	}
-	else if (!tmp[1] && !path && data->cmd && data->cmd[0] != '-')
+	else if (!tmp[1] && !path && data->cmd && data->cmd[0] != ' ')
 		res = ft_join(NULL, data->cmd, ": command not found\n");
 	free(path);
 	return (res);
@@ -49,12 +79,14 @@ static char	*redir_heredoc(char *delimiter, t_exec *data,
 {
 	int		p[2];
 	char	**tmp;
+	char	*tmp_delim;
 	char	*res;
 
 	if (pipe(p) == -1)
 		ft_exit_perror("pipe");
 	tmp = ft_split(delimiter, ' ');
-	write_heredoc_input(p[1], tmp[0]);
+	tmp_delim = strip_quotes(tmp[0]);
+	write_heredoc_input(p[1], tmp_delim);
 	close(p[1]);
 	if (attach_stdin)
 	{

@@ -24,7 +24,7 @@ void	redirections_execve(t_exec *cmds, t_vars *vars, int i, t_shell *sh)
 		dup2(cmds->heredoc_fd, STDIN_FILENO);
 		close(cmds->heredoc_fd);
 	}
-	if (ft_strncmp(cmds->cmd, "-", 2) == 0
+	if (ft_strncmp(cmds->cmd, " ", 2) == 0
 		&& (cmds->token && ft_strncmp(cmds->token, "<<", 3) == 0))
 		exit(0);
 	if (ft_strncmp(cmds->cmd, ".", 2) == 0)

@@ -1,133 +1,75 @@
 #include "minishell.h"
 
-void	*ft_realloc(void *ptr, size_t size)
+static int	handle_dollar(t_exp *e, size_t len)
 {
-	void	*new_ptr;
+	size_t	is_q;
+	size_t	nlen;
+	char	*name;
+	char	*val;
 
-	if (!ptr)
-		return (ft_calloc(1, size));
-	if (!size)
+	nlen = parse_var_name(e->in + e->i + 1, &is_q);
+	if (nlen == 0)
+		return (0);
+	if (is_q)
+		val = ft_itoa(g_exit_status);
+	else
 	{
-		free(ptr);
-		return (NULL);
+		name = ft_substr(e->in, e->i + 1, nlen);
+		val = get_env_value(name, e->sh);
+		free(name);
 	}
-	new_ptr = ft_calloc(1, size);
-	if (!new_ptr)
-		return (NULL);
-	ft_memcpy(new_ptr, ptr, size);
-	free(ptr);
-	return (new_ptr);
+	if (val)
+		len = ft_strlen(val);
+	if (!buf_grow(e, len))
+		return (free(val), -1);
+	ft_memcpy(e->out + e->j, val, len);
+	e->j += len;
+	free(val);
+	if (is_q)
+		e->i += 2;
+	else
+		e->i += 1 + nlen;
+	return (1);
 }
 
-static char	*get_env_value(char *name, t_shell *shell, int start, char *tmp)
+char	*expand_loop(t_exp e, int r)
 {
-	size_t	len;
-	int		i;
-
-	if (!name || !shell || !shell->env)
-		return (ft_strdup(""));
-	len = ft_strlen(name);
-	i = 0;
-	if (ft_strncmp(name, "?", 1) == 0)
+	while (e.in[e.i])
 	{
-		while (start > 0 && shell->input[start] == ' ')
-			start--;
-		if (start > 0 && ((shell->input[start] == '<'
-					&& shell->input[start - 1] == '<')))
-			return (ft_strjoin("$", name, 0));
-		tmp = ft_strjoin(ft_itoa(g_exit_status), &name[1], 1);
-		return (g_exit_status = 0, tmp);
-	}
-	while (shell->env[i])
-	{
-		if (ft_strncmp(shell->env[i], name, len) == 0
-			&& shell->env[i][len] == '=')
-			return (ft_strdup(shell->env[i] + len + 1));
-		i++;
-	}
-	return (ft_strdup(""));
-}
-
-
-
-static char	*expand_loop(char *input, t_shell *shell, char *result, size_t *i, size_t *j, size_t result_size)
-{
-	char	quote;
-	size_t	start;
-	char	*var;
-	char	*value;
-
-	quote = 0;
-	while (input[*i])
-	{
-		if (input[*i] == '\'' && !quote)
-			quote = '\'';
-		else if (input[*i] == quote)
-			quote = 0;
-		else if (input[*i] == '"' && !quote)
-			quote = '"';
-		else if (input[*i] == '$' && input[*i + 1] && input[*i + 1] != ' '
-			&& input[*i + 1] != '"' && input[*i + 1] != '\'' && quote != '\'')
-		{
-			(*i)++;
-			start = *i;
-			while (input[*i] && (ft_isalnum(input[*i]) || input[*i] == '?'))
-				(*i)++;
-			var = ft_substr(input, start, *i - start);
-			if (!var)
-				return (result);
-			value = get_env_value(var, shell, start - 2, NULL);
-			if (!value)
-			{
-				free(var);
-				return (result);
-			}
-			if (*j + ft_strlen(value) >= result_size)
-			{
-				result_size = result_size * 2 + ft_strlen(value) + 1;
-				result = ft_realloc(result, result_size);
-				if (!result)
-				{
-					free(var);
-					free(value);
-					return (NULL);
-				}
-			}
-			ft_strlcat(result, value, result_size);
-			*j += ft_strlen(value);
-			free(var);
-			free(value);
+		if (!e.sq && !e.dq && e.in[e.i] == '<' && e.in[e.i + 1] == '<')
+			if (!copy_heredoc(&e, 0))
+				return (free(e.out), NULL);
+		r = handle_quote(&e);
+		if (r == 0)
+			return (free(e.out), NULL);
+		if (r == 1)
 			continue ;
-		}
-		if (*j + 1 >= result_size)
+		if (!e.sq && e.in[e.i] == '$')
 		{
-			result_size = result_size * 2 + 1;
-			result = ft_realloc(result, result_size);
-			if (!result)
-				return (NULL);
+			r = handle_dollar(&e, 0);
+			if (r == -1)
+				return (free(e.out), NULL);
+			if (r == 1)
+				continue ;
 		}
-		result[(*j)++] = input[*i];
-		(*i)++;
+		if (!buf_grow(&e, 1))
+			return (free(e.out), NULL);
+		e.out[e.j++] = e.in[e.i++];
 	}
-	result[*j] = '\0';
-	return (result);
+	e.out[e.j] = '\0';
+	return (e.out);
 }
 
 char	*expand_vars(char *input, t_shell *shell)
 {
-	char	*result;
-	size_t	i;
-	size_t	j;
-	size_t	result_size;
+	t_exp	e;
 
-	j = 0;
-	i = 0;
 	if (!input || !shell)
 		return (ft_strdup(""));
-	result_size = ft_strlen(input) * 2 + 1;
-	result = ft_calloc(1, result_size);
-	if (!result)
+	e = (t_exp){.in = input, .sh = shell, .i = 0, .j = 0,
+		.sq = 0, .dq = 0, .cap = ft_strlen(input) * 2 + 1};
+	e.out = ft_calloc(1, e.cap);
+	if (!e.out)
 		return (NULL);
-	result = expand_loop(input, shell, result, &i, &j, result_size);
-	return (result);
+	return (expand_loop(e, 0));
 }

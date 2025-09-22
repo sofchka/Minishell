@@ -1,65 +1,16 @@
 #include "minishell.h"
 
-static int	skip_quotes(const char *s, int *i)
-{
-	char	quote;
-
-	quote = s[*i];
-	(*i)++;
-	while (s[*i] && s[*i] != quote)
-		(*i)++;
-	if (s[*i] == quote)
-		(*i)++;
-	else
-		return (1);
-	return (0);
-}
-
-// static int	count_tokens(const char *s, int count)
-// {
-// 	int		len;
-// 	t_data	type;
-// 	int		i;
-
-// 	i = 0;
-// 	while (s[i])
-// 	{
-// 		while (s[i] == ' ' || s[i] == '\t')
-// 			i++;
-// 		if (!s[i])
-// 			break ;
-// 		if (is_operator(&s[i], &len, &type))
-// 		{
-// 			// normal operator
-// 			count++;
-
-// 			// heredoc or input redirection: might need placeholder '-'
-// 			if ((ft_strncmp(&s[i], "<<", 2) == 0)
-// 				|| (ft_strncmp(&s[i], "<", 1) == 0))
-// 				count++;  // reserve space for the "-"
-// 			i += len;
-// 		}
-// 		else
-// 		{
-// 			while (s[i] && !is_operator(&s[i], &len, &type))
-// 			{
-// 				if (s[i] == '"' || s[i] == '\'')
-// 					skip_quotes(s, &i);
-// 				i++;
-// 			}
-// 			count++;
-// 		}
-// 	}
-// 	return (count);
-// }
-
 static int	count_tokens(const char *s, int count)
 {
+	int		i;
 	int		len;
 	t_data	type;
-	int		i;
+	int		expect_cmd;
+	int		need_rarg;
 
 	i = 0;
+	expect_cmd = 1;
+	need_rarg = 0;
 	while (s[i])
 	{
 		while (s[i] == ' ' || s[i] == '\t')
@@ -67,17 +18,39 @@ static int	count_tokens(const char *s, int count)
 		if (!s[i])
 			break ;
 		if (is_operator(&s[i], &len, &type))
+		{
+			count++;
+			if (expect_cmd && (type == HEREDOC || type == REDIR_IN))
+				count++;
+			if (type == HEREDOC || type == REDIR_IN
+				|| type == REDIR_OUT || type == APPEND)
+				need_rarg = 1;
+			if (type == PIPE)
+				expect_cmd = 1;
 			i += len;
+		}
 		else
 		{
 			while (s[i] && !is_operator(&s[i], &len, &type))
 			{
 				if (s[i] == '"' || s[i] == '\'')
-					skip_quotes(s, &i);
-				i++;
+				{
+					char	 q;
+					q = s[i++];
+					while (s[i] && s[i] != q)
+						i++;
+					if (s[i] == q)
+						i++;
+				}
+				else
+					i++;
 			}
+			count++;
+			if (need_rarg)
+				need_rarg = 0;
+			else
+				expect_cmd = 0;
 		}
-		count++;
 	}
 	return (count);
 }
@@ -126,13 +99,10 @@ static int	token_loop(t_shell *sh, int i, int j)
 			sh->pipe_count++;
 		if (ft_strncmp(sh->tokens[j], "<<", 2) == 0)
 			sh->heredocs++;
-		if ((ft_strncmp(sh->tokens[j], "<<", 2) == 0
-				|| ft_strncmp(sh->tokens[j], "<", 1) == 0)
-			&& ((j > 0 && ft_strncmp(sh->tokens[j - 1], "|", 1)) == 0
-				|| j == 0))
+		if ((ft_strncmp(sh->tokens[j], "<<", 2) == 0 || ft_strncmp(sh->tokens[j], "<", 1) == 0) && ((j > 0 && (ft_strncmp(sh->tokens[j - 1], "|", 1) == 0 || (ft_isalnum(sh->tokens[j - 1][0]) && (j > 1 && (ft_strncmp(sh->tokens[j - 2], "<<", 2) == 0 || ft_strncmp(sh->tokens[j - 2], ">>", 2) == 0 || ft_strncmp(sh->tokens[j - 2], ">", 1) == 0 || ft_strncmp(sh->tokens[j], "<", 1) == 0))))) || j == 0))
 		{
 			sh->tokens[j + 1] = sh->tokens[j];
-			sh->tokens[j++] = ft_strdup("-");
+			sh->tokens[j++] = ft_strdup(" ");
 		}
 		j++;
 	}
@@ -147,7 +117,8 @@ int	token(t_shell *sh, int i, int j)
 	sh->tok_count = count_tokens(sh->input, 0);
 	if (sh->tok_count == 0)
 		return (1);
-	sh->tokens = malloc(sizeof(char *) * (sh->tok_count + 3));
+	printf("Token count: %d\n", sh->tok_count);
+	sh->tokens = malloc(sizeof(char *) * (sh->tok_count + 1));
 	if (!sh->tokens)
 		return (1);
 	if (token_loop(sh, i, j))

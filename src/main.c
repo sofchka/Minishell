@@ -26,12 +26,12 @@ void	main_loop(t_shell *shell, char *expanded)
 			free(shell->input);
 			continue ;
 		}
-		// int i = 0;
-		// while (shell->tokens[i])
-		// {
-		// 	printf(" [%s]\n", shell->tokens[i]);
-		// 	i++;
-		// }
+		int i = 0;
+		while (shell->tokens[i])
+		{
+			printf(" [%s]\n", shell->tokens[i]);
+			i++;
+		}
 		if (start(shell) == -1)
 			break ;
 		reinit(&shell);
