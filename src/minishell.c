@@ -87,6 +87,18 @@ int	start(t_shell *sh)
 	cmds = split_by_pipe(sh, 0, NULL);
 	if (sh->heredocs > 0)
 		herdoc_handle(sh, &cmds, 0);
+	char **split_arg = ft_split(cmds->cmd, ' ');
+	if (!split_arg || !*split_arg)
+	{
+		//errror piti lini
+	}
+	if (sh->pipe_count == 0 && cmds && is_builtin(split_arg[0]))
+	{
+		restore_std(sh);
+		g_exit_status = exec_builtin(sh,split_arg);
+		ft_free_execs(cmds);
+		return (0);
+	}
 	if (!cmds)
 		return (0);
 	if (sh->pipe_count > 0)
