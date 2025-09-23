@@ -23,7 +23,10 @@ static void	fill_exec_node(t_exec *cur, char *token, char **tokens, int i)
 			cur->cmd = tokens[i - 3];
 		else
 			cur->cmd = tokens[i - 2];
-		cur->cmd2 = tokens[i - 1];
+		if (ft_strncmp(token, "<<", 2) != 0)
+			cur->cmd2 = strip_quotes(tokens[i - 1]);
+		else
+			cur->cmd2 = tokens[i - 1];
 		cur->token = token;
 	}
 	else
@@ -61,17 +64,17 @@ t_exec	*split_by_pipe(t_shell *sh, int i, char *token)
 	}
 	fill_exec_node(cur, token, sh->tokens, i);
 
-	t_exec	*tmp;
+	// t_exec	*tmp;
 
-	tmp = head;
-	while (tmp)
-	{
-		printf("NODE: cmd=[%s] cmd2=[%s] token=[%s]\n",
-			tmp->cmd ? tmp->cmd : "NULL",
-			tmp->cmd2 ? tmp->cmd2 : "NULL",
-			tmp->token ? tmp->token : "NULL");
-		tmp = tmp->next;
-	}
+	// tmp = head;
+	// while (tmp)
+	// {
+	// 	printf("NODE: cmd=[%s] cmd2=[%s] token=[%s]\n",
+	// 		tmp->cmd ? tmp->cmd : "NULL",
+	// 		tmp->cmd2 ? tmp->cmd2 : "NULL",
+	// 		tmp->token ? tmp->token : "NULL");
+	// 	tmp = tmp->next;
+	// }
 
 
 	return (head);

@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-static char	*strip_quotes(const char *s)
+char	*strip_quotes(const char *s)
 {
 	int		i;
 	int		start;
@@ -33,7 +33,6 @@ static void	write_heredoc_input(int fd, char *delimiter)
 {
 	char	*line;
 
-	printf("heredoc> Delimiter is [%s]\n", delimiter);
 	while (1)
 	{
 		line = readline("> ");

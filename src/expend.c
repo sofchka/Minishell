@@ -1,5 +1,18 @@
 #include "minishell.h"
 
+static int	handle_dollar_2(t_exp *e, size_t len, char **val)
+{
+	if (*val)
+		len = ft_strlen(*val);
+	if (!buf_grow(e, len))
+		return (free(*val), -1);
+	ft_memcpy(e->out + e->j, *val, len);
+	e->j += len;
+	free(*val);
+	return (0);
+}
+
+
 static int	handle_dollar(t_exp *e, size_t len)
 {
 	size_t	is_q;
@@ -12,19 +25,16 @@ static int	handle_dollar(t_exp *e, size_t len)
 		return (0);
 	if (is_q)
 		val = ft_itoa(g_exit_status);
+	else if (e->in[e->i + 1] == '$')
+		val = ft_itoa(getpid());
 	else
 	{
 		name = ft_substr(e->in, e->i + 1, nlen);
 		val = get_env_value(name, e->sh);
 		free(name);
 	}
-	if (val)
-		len = ft_strlen(val);
-	if (!buf_grow(e, len))
-		return (free(val), -1);
-	ft_memcpy(e->out + e->j, val, len);
-	e->j += len;
-	free(val);
+	if (handle_dollar_2(e, len, &val) == -1)
+		return (-1);
 	if (is_q)
 		e->i += 2;
 	else

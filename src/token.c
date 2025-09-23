@@ -99,7 +99,14 @@ static int	token_loop(t_shell *sh, int i, int j)
 			sh->pipe_count++;
 		if (ft_strncmp(sh->tokens[j], "<<", 2) == 0)
 			sh->heredocs++;
-		if ((ft_strncmp(sh->tokens[j], "<<", 2) == 0 || ft_strncmp(sh->tokens[j], "<", 1) == 0) && ((j > 0 && (ft_strncmp(sh->tokens[j - 1], "|", 1) == 0 || (ft_isalnum(sh->tokens[j - 1][0]) && (j > 1 && (ft_strncmp(sh->tokens[j - 2], "<<", 2) == 0 || ft_strncmp(sh->tokens[j - 2], ">>", 2) == 0 || ft_strncmp(sh->tokens[j - 2], ">", 1) == 0 || ft_strncmp(sh->tokens[j], "<", 1) == 0))))) || j == 0))
+		if ((ft_strncmp(sh->tokens[j], "<<", 2) == 0
+				|| ft_strncmp(sh->tokens[j], "<", 1) == 0)
+			&& ((j > 0 && (ft_strncmp(sh->tokens[j - 1], "|", 1) == 0
+						|| (ft_isalnum(sh->tokens[j - 1][0]) //op chi kpoxem
+			&& (j > 1 && (ft_strncmp(sh->tokens[j - 2], "<<", 2) == 0
+				|| ft_strncmp(sh->tokens[j - 2], ">>", 2) == 0
+				|| ft_strncmp(sh->tokens[j - 2], ">", 1) == 0
+				|| ft_strncmp(sh->tokens[j - 2], "<", 1) == 0))))) || j == 0))
 		{
 			sh->tokens[j + 1] = sh->tokens[j];
 			sh->tokens[j++] = ft_strdup(" ");
@@ -117,7 +124,6 @@ int	token(t_shell *sh, int i, int j)
 	sh->tok_count = count_tokens(sh->input, 0);
 	if (sh->tok_count == 0)
 		return (1);
-	printf("Token count: %d\n", sh->tok_count);
 	sh->tokens = malloc(sizeof(char *) * (sh->tok_count + 1));
 	if (!sh->tokens)
 		return (1);

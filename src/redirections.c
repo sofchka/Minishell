@@ -1,54 +1,54 @@
 #include "minishell.h"
 
-static int	redir_input(char *file)
+static int	redir_input(char *file, t_exec *cmds)
 {
-	int	fd;
+	int		fd;
+	char	*name;
 
-	fd = open(file, O_RDONLY);
+	name = strip_quotes(file);
+	fd = open(name, O_RDONLY);
+	free(name);
 	if (fd < 0)
 	{
 		perror(file);
-		exit (1);
+		g_exit_status = 1;
+		return (-1);
 	}
-	dup2(fd, STDIN_FILENO);
+	if (dup2(fd, STDIN_FILENO) < 0)
+		return (close(fd), perror("dup2"), g_exit_status = 1, -1);
 	close(fd);
+	cmds->has_infile = 1;
 	return (0);
 }
 
-int	redir_output(char *file, char *type, int dup)
+int	redir_output(char *file, char *type, t_exec *cmds)
 {
-	int	fd;
+	int		fd;
+	char	*name;
 
-	fd = -1;
-	if (ft_strncmp(type, ">", 2) == 0)
-		fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	else if (ft_strncmp(type, ">>", 2) == 0)
-		fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	name = strip_quotes(file);
+	if (!ft_strncmp(type, ">>", 3))
+		fd = open(name, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	else
+		fd = open(name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	free(name);
 	if (fd < 0)
-	{
-		perror(file);
-		exit (1);
-	}
-	if (dup)
-		dup2(fd, STDOUT_FILENO);
+		return (perror(file), g_exit_status = 1, -1);
+	if (dup2(fd, STDOUT_FILENO) < 0)
+		return (close(fd), perror("dup2"), g_exit_status = 1, -1);
 	close(fd);
+	cmds->has_outfile = 1;
 	return (0);
 }
 
-int	handle_redirection(t_exec *data)
+int	handle_redirection(t_exec *cmds)
 {
-	if (data->token)
-	{
-		if (!data->cmd2)
-		{
-			write(2, "Syntax error: missing file after redirection\n", 50);
-			return (1);
-		}
-		if (data->token[0] == '<' && data->token[1] == '\0')
-			return (redir_input(data->cmd2));
-		if ((data->token[0] == '>' && data->token[1] == '\0')
-			|| (data->token[0] == '>' && data->token[1] == '>'))
-			return (redir_output(data->cmd2, data->token, 1));
-	}
+	if (!cmds->token || !cmds->cmd2)
+		return (0);
+	if (!ft_strncmp(cmds->token, "<", 2))
+		return (redir_input(cmds->cmd2, cmds));
+	if (!ft_strncmp(cmds->token, ">", 2)
+		|| !ft_strncmp(cmds->token, ">>", 3))
+		return (redir_output(cmds->cmd2, cmds->token, cmds));
 	return (0);
 }

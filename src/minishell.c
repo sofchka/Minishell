@@ -2,23 +2,20 @@
 
 void	redirections_execve(t_exec *cmds, t_vars *vars, int i, t_shell *sh)
 {
-	if (i > 0)
-	{
+	if (handle_redirection(cmds) == -1)
+		exit(g_exit_status);
+	if (i > 0 && !cmds->has_infile)
 		if (dup2(vars->pfd[i - 1][0], STDIN_FILENO) < 0)
 			ft_exit_perror("dup2 stdin");
-	}
-	if (i < sh->pipe_count)
-	{
+	if (i < sh->pipe_count && !cmds->has_outfile)
 		if (dup2(vars->pfd[i][1], STDOUT_FILENO) < 0)
 			ft_exit_perror("dup2 stdout");
-	}
 	i = -1;
 	while (++i < sh->pipe_count)
 	{
 		close(vars->pfd[i][0]);
 		close(vars->pfd[i][1]);
 	}
-	handle_redirection(cmds);
 	if (cmds->heredoc_fd > 0)
 	{
 		dup2(cmds->heredoc_fd, STDIN_FILENO);

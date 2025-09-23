@@ -27,6 +27,8 @@ size_t	parse_var_name(const char *s, size_t *is_qmark)
 
 	i = 0;
 	*is_qmark = 0;
+	if (s[i] == '$')
+		return (1);
 	if (s[i] == '?')
 	{
 		*is_qmark = 1;

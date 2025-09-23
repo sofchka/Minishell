@@ -40,6 +40,8 @@ typedef struct s_exec
 	char			*cmd2;
 	char			*token;
 	int				heredoc_fd;
+	int				has_infile;
+	int				has_outfile;
 	struct s_exec	*next;
 }			t_exec;
 
@@ -102,7 +104,8 @@ int		token(t_shell *sh, int i, int j);
 
 // redirections.c
 int		handle_redirection(t_exec *data);
-int		redir_output(char *file, char *type, int dup);
+int	redir_output(char *file, char *type, t_exec *cmds);
+
 
 // splits.c
 t_exec	*split_by_pipe(t_shell *sh, int i, char *token);
@@ -137,5 +140,6 @@ int		ft_exit(char **argv, t_shell *shell);
 
 // heredoc.c
 void	herdoc_handle(t_shell *sh, t_exec **data, int count);
+char	*strip_quotes(const char *s);
 
 #endif
