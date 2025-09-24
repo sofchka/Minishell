@@ -136,7 +136,7 @@ void	restore_std(t_shell *sh);
 char	*ft_join(char *a, char *b, char *c);
 
 // exit.c
-//int		ft_exit(char **argv, t_shell *shell);
+int		ft_exit(char **argv, t_shell *shell);
 
 // heredoc.c
 void	herdoc_handle(t_shell *sh, t_exec **data, int count);
@@ -145,12 +145,12 @@ char	*strip_quotes(const char *s);
 
 // builtins.c
 int	ft_echo(char **args);
-int	ft_cd(t_shell *sh, t_exec *cmd);
+int	ft_cd(t_shell *sh, char **cmd);
 int	ft_pwd(void);
 int	ft_export(t_shell *sh, char **args);
 int	ft_unset(t_shell *sh, char **args);
 int	ft_env(char **env);
-int	ft_exit(t_shell *sh, char **args);
+//int	ft_exit(t_shell *sh, char **args);
 int	is_builtin(char *cmd);
 int	exec_builtin(t_shell *sh, char **cmd);
 
