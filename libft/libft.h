@@ -51,6 +51,7 @@ void		ft_putchar_fd(char c, int fd);
 void		ft_putstr_fd(const char *s, int fd);
 char		*ft_substr(char const *s, unsigned int start, size_t len);
 void		ft_putnbr_fd(int n, int fd);
+int			ft_strcmp(const char *s1, const char *s2);
 
 typedef struct s_list
 {
