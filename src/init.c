@@ -29,6 +29,7 @@ char	**dup_env(char **envp)
 
 void	init_shell(t_shell *shell)
 {
+	shell->home = NULL;
 	shell->input = NULL;
 	shell->tokens = NULL;
 	shell->tok_count = 0;

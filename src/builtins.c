@@ -34,6 +34,9 @@ int	exec_builtin(t_shell *sh, char **cmd)
 	return (1);
 }
 
+
+
+
 int	ft_pwd(void)
 {
     char *pwd;
@@ -47,6 +50,8 @@ int	ft_pwd(void)
 	free(pwd);
     return 0;
 }
+
+
 //cd
 
 int cmd_count(char **cmd)
@@ -57,26 +62,43 @@ int cmd_count(char **cmd)
 	return i;
 }
 
+
+
+
 int ft_cd(t_shell *sh, char **cmd)
 {
 	int cd;
-	char *path;
-	//printf("lalalla");
-	//printf("%s",cmd[1]);
+
 	int ccmd = cmd_count(cmd);
 	if(ccmd > 2)
 		return (printf("bash: cd: too many arguments\n"),1);
-	int i = -1;
-	while(ccmd == 1 && sh->env[++i])
+	
+	if (ccmd == 1 || (ccmd == 2 && !ft_strcmp(cmd[1],"~")))
 	{
-		if((path = ft_strnstr(sh->env[i],"HOME=",5)) != NULL)
+		char *tmp = get_env_value("HOME",sh);
+		printf("%s\n\n\n", tmp);
+		cd = chdir(tmp);
+		if (cd == -1)
+			perror("minishell");
+	}
+
+	/*while(ccmd == 1 && sh->env[++i])
+	{
+		if((path = get_env_value("HOME=",sh)) != "")
 		{
 			cd = chdir(path + 5);
+			if (!cd)
+				//error
 			return 0;
 		}
 		//printf("%s\n",sh->env[i]);
-	}
+	}*/
 	cd = chdir(cmd[1]);
+	if (!cd)
+	{
+		//error
+	}
+		
 	return 0;
 }
 

@@ -51,7 +51,9 @@ int	main(int argc, char **argv, char **envp)
 	}
 	init_shell(&shell);
 	shell.env = dup_env(envp);
-	if (!shell.env)
+	if(!(shell.home = get_env_value("HOME",&shell)))
+		shell.home = NULL;
+	if (!shell.env || !shell.home)
 	{
 		write(2, "\033[1;31mEnv init Error\n", 23);
 		return (1);

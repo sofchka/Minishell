@@ -47,6 +47,7 @@ typedef struct s_exec
 
 typedef struct s_shell
 {
+	char			*home;
 	char			**env;
 	char			*input;
 	char			**tokens;
