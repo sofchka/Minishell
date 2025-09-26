@@ -147,8 +147,8 @@ int	ft_cd(t_shell *sh, char **cmd);
 int	ft_pwd(void);
 int	ft_export(t_shell *sh, char **args);
 int	ft_unset(t_shell *sh, char **args);
-int	ft_env(char **env);
-int	is_builtin(char *cmd);
+int	ft_env(t_shell *sh,char **env);
+	int	is_builtin(char *cmd);
 int	exec_builtin(t_shell *sh, char **cmd, t_exec *cmds);
 
 // exit.c

@@ -40,7 +40,7 @@ void	ft_exit_loop(char **argv)
 			ft_putstr_fd(argv[1], STDERR_FILENO);
 			ft_putstr_fd(": numeric argument required\n", STDERR_FILENO);
 			ft_free(argv);
-			exit(255);
+			exit(2);
 		}
 		i++;
 	}

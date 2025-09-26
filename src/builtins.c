@@ -6,10 +6,9 @@ int	is_builtin(char *cmd)
 		return (0);
 	return (/*!ft_strcmp(cmd, "echo") || */!ft_strcmp(cmd, "cd")
 		|| !ft_strcmp(cmd, "pwd") /*|| !ft_strcmp(cmd, "export")
-		|| !ft_strcmp(cmd, "unset") || !ft_strcmp(cmd, "env")*/
+		|| !ft_strcmp(cmd, "unset") */ || !ft_strcmp(cmd, "env")
 		|| !ft_strcmp(cmd, "exit"));
 }
-
 int	exec_builtin(t_shell *sh, char **cmd, t_exec *cmds)
 {
 	if (handle_redirection(cmds) == -1)
@@ -29,9 +28,9 @@ int	exec_builtin(t_shell *sh, char **cmd, t_exec *cmds)
 	/*else if (!ft_strcmp(cmd->cmd, "export"))
 		return (ft_export(sh, &cmd->cmd));
 	else if (!ft_strcmp(cmd->cmd, "unset"))
-		return (ft_unset(sh, &cmd->cmd));
-	else if (!ft_strcmp(cmd->cmd, "env"))
-		return (ft_env(sh->env));*/
+		return (ft_unset(sh, &cmd->cmd));*/
+	else if (!ft_strcmp(cmd[0], "env"))
+		return (ft_env(sh,cmd));
 	else if (!ft_strcmp(cmd[0], "exit"))
 		return (ft_exit(cmd, sh), 1);
 	restore_std(sh);
@@ -59,7 +58,7 @@ int	ft_pwd(void)
 int cmd_count(char **cmd)
 {
 	int i = 0;
-	while(cmd[i])
+	while(cmd[i] && cmd)
 		i++; 
 	return i;
 }
@@ -107,7 +106,12 @@ int ft_cd(t_shell *sh, char **cmd)
 	else
 	{
 		if (chdir(cmd[1]) == -1)
-			return (perror("cd"), g_exit_status = 1, 1);//?
+		{
+			char *a = ft_strjoin("cd: ",cmd[1], 0);
+			if (!a)
+				return(0);
+			return (perror(a), free(a), g_exit_status = 1, 1);//?
+		}
 	}
 	return (g_exit_status = 0, 0);
 }
@@ -134,3 +138,18 @@ int ft_cd(t_shell *sh, char **cmd)
 // 	cd = chdir(cmd[1]);
 // 	return 0;
 // }
+
+// env
+
+int ft_env(t_shell *shell,char **cmd)
+{
+	if(cmd[1])
+	{
+		printf("env: '%s': No such file or directory\n", cmd[1]);
+		return(g_exit_status = 127, 1);
+	}
+	int i = -1;
+	while(shell->env[++i])
+		printf("%s\n",shell->env[i]);
+	return 0;
+}
