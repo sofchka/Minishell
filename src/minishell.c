@@ -1,81 +1,5 @@
 #include "minishell.h"
 
-void	redirections_execve(t_exec *cmds, t_vars *vars, int i, t_shell *sh)
-{
-	if (handle_redirection(cmds) == -1)
-		exit(g_exit_status);
-	if (i > 0 && !cmds->has_infile)
-		if (dup2(vars->pfd[i - 1][0], STDIN_FILENO) < 0)
-			ft_exit_perror("dup2 stdin");
-	if (i < sh->pipe_count && !cmds->has_outfile)
-		if (dup2(vars->pfd[i][1], STDOUT_FILENO) < 0)
-			ft_exit_perror("dup2 stdout");
-	i = -1;
-	while (++i < sh->pipe_count)
-	{
-		close(vars->pfd[i][0]);
-		close(vars->pfd[i][1]);
-	}
-	if (cmds->heredoc_fd > 0)
-	{
-		dup2(cmds->heredoc_fd, STDIN_FILENO);
-		close(cmds->heredoc_fd);
-	}
-	if (ft_strncmp(cmds->cmd, " ", 2) == 0
-		&& (cmds->token && ft_strncmp(cmds->token, "<<", 3) == 0))
-		exit(0);
-	if (ft_strncmp(cmds->cmd, ".", 2) == 0)
-	{
-		restore_std(sh);
-		ft_putstr_fd("shell: .: filename argument required\n", STDERR_FILENO);
-		ft_putstr_fd(".: usage: . filename [arguments]\n", STDERR_FILENO);
-		exit(2);
-	}
-	if (ft_strncmp(cmds->cmd, "..", 3) == 0)
-	{
-		restore_std(sh);
-		print_error(cmds->cmd, "command not found");
-		exit(127);
-	}
-	vars->path = find_cmd(cmds->cmd, sh->env, 0, NULL);
-	vars->cmd = ft_split(cmds->cmd, ' ');
-	if (!vars->path)
-	{
-		restore_std(sh);
-		if (ft_strchr(vars->cmd[0], '/'))
-			print_error(vars->cmd[0], "No such file or directory");
-		else
-			print_error(vars->cmd[0], "command not found");
-		ft_free(vars->cmd);
-		exit (127);
-	}
-	struct stat st;
-	if (stat(vars->path, &st) == 0 && S_ISDIR(st.st_mode))
-	{
-		restore_std(sh);
-		print_error(cmds->cmd, "is a directory");
-		free(vars->path);
-		exit(126);
-	}
-	errno = 0;
-	execve(vars->path, vars->cmd, sh->env);
-	restore_std(sh);
-	if (errno == ENOENT)
-		print_error(cmds->cmd, "No such file or directory");
-	else if (errno == EACCES)
-		print_error(cmds->cmd, "Permission denied");
-	else if (errno == ENOEXEC)
-		print_error(cmds->cmd, "Exec format error");
-	else
-		perror("shell");
-
-	free(vars->path);
-	ft_free(vars->cmd);
-	if (errno == ENOENT)
-		exit (127);
-	exit(126);
-}
-
 int	start(t_shell *sh)
 {
 	t_exec	*cmds;
@@ -88,14 +12,9 @@ int	start(t_shell *sh)
 	if (sh->heredocs > 0)
 		herdoc_handle(sh, &cmds, 0);
 	char **split_arg = ft_split(cmds->cmd, ' ');
-	if (!split_arg || !*split_arg)
-	{
-		//errror piti lini
-	}
 	if (sh->pipe_count == 0 && cmds && is_builtin(split_arg[0]))
 	{
-		restore_std(sh);
-		g_exit_status = exec_builtin(sh,split_arg);
+		g_exit_status = exec_builtin(sh, split_arg, cmds);
 		ft_free_execs(cmds);
 		return (0);
 	}

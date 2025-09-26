@@ -7,7 +7,7 @@ LDFLAGS = -L/opt/homebrew/opt/readline/lib -lreadline
 LIBFT_DIR = libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
-SRCS = src/main.c src/minishell.c src/init.c src/token.c src/check.c src/expend.c src/frees.c src/signals.c src/redirections.c src/splits.c src/find_path.c src/exit.c src/heredoc.c src/utils.c src/expend_2.c src/builtins.c
+SRCS = src/main.c src/minishell.c src/init.c src/token.c src/check.c src/expend.c src/frees.c src/signals.c src/redirections.c src/splits.c src/find_path.c src/exit.c src/heredoc.c src/utils.c src/expend_2.c src/builtins.c src/execve.c
 OBJS = $(SRCS:.c=.o)
 
 RM = rm -f

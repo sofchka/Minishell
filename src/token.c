@@ -131,13 +131,9 @@ int	token(t_shell *sh, int i, int j)
 		return (1);
 	if (syntax_error(sh))
 	{
+		g_exit_status = 2;
 		ft_free(sh->tokens);
 		return (1);
-	}
-	if (sh->tok_count == 1 && sh->tokens[0])
-	{
-		if (sh->tokens[0] && ft_strncmp(sh->tokens[0], "exit", 4) == 0)
-			return (ft_exit(ft_split(sh->tokens[0], ' '), sh), 1);
 	}
 	return (0);
 }

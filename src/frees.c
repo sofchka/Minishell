@@ -17,6 +17,8 @@ void	ft_free(char **arg)
 
 void	ft_exit_perror(const char *msg)
 {
+	if (errno == EPIPE)
+		exit(1);
 	perror(msg);
 	exit(EXIT_FAILURE);
 }
