@@ -60,27 +60,27 @@ int cmd_count(char **cmd)
 {
 	int i = 0;
 	while(cmd[i])
-		i++;
+		i++; 
 	return i;
 }
 
-char	*env_value(char *name, t_shell *sh)
-{
-	int		i;
-	size_t	len;
+// char	*env_value(char *name, t_shell *sh)
+// {
+// 	int		i;
+// 	size_t	len;
 
-	if (!name || !sh || !sh->env)
-		return (NULL);
-	len = ft_strlen(name);
-	i = 0;
-	while (sh->env[i])
-	{
-		if (!ft_strncmp(sh->env[i], name, len) && sh->env[i][len] == '=')
-			return (ft_strdup(sh->env[i] + len + 1));
-		i++;
-	}
-	return (NULL);
-}
+// 	if (!name || !sh || !sh->env)
+// 		return (NULL);
+// 	len = ft_strlen(name);
+// 	i = 0;
+// 	while (sh->env[i])
+// 	{
+// 		if (!ft_strncmp(sh->env[i], name, len) && sh->env[i][len] == '=')
+// 			return (ft_strdup(sh->env[i] + len + 1));
+// 		i++;
+// 	}
+// 	return (NULL);
+// }
 
 int ft_cd(t_shell *sh, char **cmd)
 {
@@ -92,22 +92,45 @@ int ft_cd(t_shell *sh, char **cmd)
 	if (ccmd > 2)
 		return (write(2, "bash: cd: too many arguments\n", 30), g_exit_status = 1, 1);
 	i = -1;
-	if (ccmd == 1) // only "cd"
+	if (ccmd == 1)
 	{
 		while (ccmd == 1 && sh->env[++i])
 		{
-			path = env_value("HOME", sh);
-			if (path == NULL)
+			path = get_env_value("HOME", sh);
+			if (path[0] == '\0')
 				return (write(2, "bash: cd: HOME not set\n", 23), g_exit_status = 1, 1);
 			if (chdir(path) == -1)
-				return (ft_exit_perror("cd"), free(path), g_exit_status = 1, 1);
+				return (perror("cd"), free(path), g_exit_status = 1, 1);
 			free(path);
 		}
 	}
 	else
 	{
 		if (chdir(cmd[1]) == -1)
-			return (ft_exit_perror("cd"), g_exit_status = 1, 1);
+			return (perror("cd"), g_exit_status = 1, 1);//?
 	}
 	return (g_exit_status = 0, 0);
 }
+
+// int ft_cd(t_shell *sh, char **cmd)
+// {
+// 	int cd;
+// 	char *path;
+// 	//printf("lalalla");
+// 	//printf("%s",cmd[1]);
+// 	int ccmd = cmd_count(cmd);
+// 	if(ccmd > 2)
+// 		return (printf("bash: cd: too many arguments\n"),1);
+// 	int i = -1;
+// 	while(ccmd == 1 && sh->env[++i])
+// 	{
+// 		if((path = ft_strnstr(sh->env[i],"HOME=",5)) != NULL)
+// 		{
+// 			cd = chdir(path + 5);
+// 			return cd;
+// 		}
+// 		//printf("%s\n",sh->env[i]);
+// 	}
+// 	cd = chdir(cmd[1]);
+// 	return 0;
+// }

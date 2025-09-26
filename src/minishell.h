@@ -48,6 +48,7 @@ typedef struct s_exec
 typedef struct s_shell
 {
 	char			**env;
+	char			*home;
 	char			*input;
 	char			**tokens;
 	int				tok_count;

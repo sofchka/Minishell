@@ -31,6 +31,7 @@ void	init_shell(t_shell *shell)
 {
 	shell->input = NULL;
 	shell->tokens = NULL;
+	shell->home = NULL;
 	shell->tok_count = 0;
 	shell->pipe_count = 0;
 	shell->env = NULL;

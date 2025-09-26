@@ -26,12 +26,12 @@ void	main_loop(t_shell *shell, char *expanded)
 			free(shell->input);
 			continue ;
 		}
-		// int i = 0;
-		// while (shell->tokens[i])
-		// {
-		// 	printf(" [%s]\n", shell->tokens[i]);
-		// 	i++;
-		// }
+		int i = 0;
+		while (shell->tokens[i])
+		{
+			printf(" [%s]\n", shell->tokens[i]);
+			i++;
+		}
 		if (start(shell) == -1)
 			break ;
 		reinit(&shell);
@@ -51,6 +51,8 @@ int	main(int argc, char **argv, char **envp)
 	}
 	init_shell(&shell);
 	shell.env = dup_env(envp);
+	shell.home = get_env_value("HOME", &shell);
+	printf("debug: HOME=[%s]\n", shell.home);
 	if (!shell.env)
 	{
 		write(2, "\033[1;31mEnv init Error\n", 23);

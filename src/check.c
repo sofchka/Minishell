@@ -43,6 +43,7 @@ static int	if_case(t_shell *sh, int i, int *len)
 		return (1);
 	return (0);
 }
+
 static int	pr_error(t_shell *sh, int i, int *len)
 {
 	if (sh->tokens[i + 1] && ft_strncmp(sh->tokens[i + 1], " ", 2) == 0)
