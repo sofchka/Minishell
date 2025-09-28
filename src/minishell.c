@@ -11,12 +11,15 @@ int	start(t_shell *sh)
 	cmds = split_by_pipe(sh, 0, NULL);
 	if (sh->heredocs > 0)
 		herdoc_handle(sh, &cmds, 0);
-	char **split_arg = ft_split(cmds->cmd, ' ');
-	if (sh->pipe_count == 0 && cmds && is_builtin(split_arg[0]))
+	if (cmds->cmd)
 	{
-		g_exit_status = exec_builtin(sh, split_arg, cmds);
-		ft_free_execs(cmds);
-		return (0);
+		char **split_arg = ft_split(cmds->cmd, ' ');
+		if (sh->pipe_count == 0 && cmds && is_builtin(split_arg[0]))
+		{
+			g_exit_status = exec_builtin(sh, split_arg, cmds);
+			ft_free_execs(cmds);
+			return (0);
+		}
 	}
 	if (!cmds)
 		return (0);
@@ -38,21 +41,37 @@ int	start(t_shell *sh)
 	}
 	i = 0;
 	current = cmds;
-	while (current->cmd && i < sh->pipe_count + 1)
+	while (i < sh->pipe_count + 1)
 	{
-		vars.pids[i] = fork();
-		if (vars.pids[i] < 0)
-			ft_exit_perror("fork failed");
-		if (vars.pids[i] == 0)
-			redirections_execve(current, &vars, i, sh);
-		if (i > 0)
+		if (current && current->cmd)
 		{
-			close(vars.pfd[i - 1][0]);
-			close(vars.pfd[i - 1][1]);
+			vars.pids[i] = fork();
+			if (vars.pids[i] < 0)
+				ft_exit_perror("fork failed");
+			if (vars.pids[i] == 0)
+				redirections_execve(current, &vars, i, sh);
+			if (i > 0)
+			{
+				close(vars.pfd[i - 1][0]);
+				close(vars.pfd[i - 1][1]);
+			}
+			if (current->next)
+				current = current->next;
+			i++;
 		}
-		if (current->next)
-			current = current->next;
-		i++;
+		else if (!current->cmd && current->token
+			&& !ft_strncmp(current->token, "<<", 3))//maybe wrong idk
+		{
+			handle_redirection(current);
+			if (i > 0)
+			{
+				close(vars.pfd[i - 1][0]);
+				close(vars.pfd[i - 1][1]);
+			}
+			i++;
+			if (current->next)
+				current = current->next;
+		}
 	}
 	i = -1;
 	while (++i < sh->pipe_count)

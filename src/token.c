@@ -1,16 +1,14 @@
 #include "minishell.h"
 
-static int	count_tokens(const char *s, int count)
+static int	count_tokens(const char *s)
 {
 	int		i;
 	int		len;
 	t_data	type;
-	int		expect_cmd;
-	int		need_rarg;
+	int		count;
 
 	i = 0;
-	expect_cmd = 1;
-	need_rarg = 0;
+	count = 0;
 	while (s[i])
 	{
 		while (s[i] == ' ' || s[i] == '\t')
@@ -20,13 +18,6 @@ static int	count_tokens(const char *s, int count)
 		if (is_operator(&s[i], &len, &type))
 		{
 			count++;
-			if (expect_cmd && (type == HEREDOC || type == REDIR_IN))
-				count++;
-			if (type == HEREDOC || type == REDIR_IN
-				|| type == REDIR_OUT || type == APPEND)
-				need_rarg = 1;
-			if (type == PIPE)
-				expect_cmd = 1;
 			i += len;
 		}
 		else
@@ -35,7 +26,7 @@ static int	count_tokens(const char *s, int count)
 			{
 				if (s[i] == '"' || s[i] == '\'')
 				{
-					char	 q;
+					char q;
 					q = s[i++];
 					while (s[i] && s[i] != q)
 						i++;
@@ -46,10 +37,6 @@ static int	count_tokens(const char *s, int count)
 					i++;
 			}
 			count++;
-			if (need_rarg)
-				need_rarg = 0;
-			else
-				expect_cmd = 0;
 		}
 	}
 	return (count);
@@ -76,7 +63,8 @@ static char	*extract_token(const char *s, int *i, int start, int end)
 			if (s[*i] == quote)
 				(*i)++;
 		}
-		(*i)++;
+		else
+			(*i)++;
 	}
 	end = *i;
 	while (end > start && (s[end - 1] == ' ' || s[end - 1] == '\t'))
@@ -95,22 +83,10 @@ static int	token_loop(t_shell *sh, int i, int j)
 		sh->tokens[j] = extract_token(sh->input, &i, i, 0);
 		if (!sh->tokens[j])
 			return (ft_free(sh->tokens), 1);
-		if (ft_strncmp(sh->tokens[j], "|", 1) == 0)
+		if (!ft_strncmp(sh->tokens[j], "|", 1))
 			sh->pipe_count++;
-		if (ft_strncmp(sh->tokens[j], "<<", 2) == 0)
+		if (!ft_strncmp(sh->tokens[j], "<<", 2))
 			sh->heredocs++;
-		if ((ft_strncmp(sh->tokens[j], "<<", 2) == 0
-				|| ft_strncmp(sh->tokens[j], "<", 1) == 0)
-			&& ((j > 0 && (ft_strncmp(sh->tokens[j - 1], "|", 1) == 0
-						|| (ft_isalnum(sh->tokens[j - 1][0]) //op chi kpoxem
-			&& (j > 1 && (ft_strncmp(sh->tokens[j - 2], "<<", 2) == 0
-				|| ft_strncmp(sh->tokens[j - 2], ">>", 2) == 0
-				|| ft_strncmp(sh->tokens[j - 2], ">", 1) == 0
-				|| ft_strncmp(sh->tokens[j - 2], "<", 1) == 0))))) || j == 0))
-		{
-			sh->tokens[j + 1] = sh->tokens[j];
-			sh->tokens[j++] = ft_strdup(" ");
-		}
 		j++;
 	}
 	sh->tokens[j] = NULL;
@@ -121,7 +97,7 @@ int	token(t_shell *sh, int i, int j)
 {
 	if (has_open_quote(sh->input))
 		return (1);
-	sh->tok_count = count_tokens(sh->input, 0);
+	sh->tok_count = count_tokens(sh->input);
 	if (sh->tok_count == 0)
 		return (1);
 	sh->tokens = malloc(sizeof(char *) * (sh->tok_count + 1));

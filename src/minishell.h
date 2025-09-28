@@ -34,6 +34,13 @@ typedef enum e_data
 	HEREDOC,
 }			t_data;
 
+typedef struct s_rsub
+{
+	char			*op;
+	char			*arg;
+	struct s_rsub	*next;
+}			t_rsub;
+
 typedef struct s_exec
 {
 	char			*cmd;
@@ -43,6 +50,7 @@ typedef struct s_exec
 	int				has_infile;
 	int				has_outfile;
 	struct s_exec	*next;
+	t_rsub			*subs;
 }			t_exec;
 
 typedef struct s_shell
@@ -107,7 +115,6 @@ int		token(t_shell *sh, int i, int j);
 int		handle_redirection(t_exec *data);
 int		redir_output(char *file, char *type, t_exec *cmds);
 
-
 // splits.c
 t_exec	*split_by_pipe(t_shell *sh, int i, char *token);
 
@@ -140,20 +147,17 @@ char	*ft_join(char *a, char *b, char *c);
 void	herdoc_handle(t_shell *sh, t_exec **data, int count);
 char	*strip_quotes(const char *s);
 
-
 // builtins.c
-int	ft_echo(char **args);
-int	ft_cd(t_shell *sh, char **cmd);
-int	ft_pwd(void);
-int	ft_export(t_shell *sh, char **args);
-int	ft_unset(t_shell *sh, char **args);
-int	ft_env(t_shell *sh,char **env);
-	int	is_builtin(char *cmd);
-int	exec_builtin(t_shell *sh, char **cmd, t_exec *cmds);
+int		ft_echo(char **args);
+int		ft_cd(t_shell *sh, char **cmd);
+int		ft_pwd(void);
+int		ft_export(t_shell *sh, char **args);
+int		ft_unset(t_shell *sh, char **args);
+int		ft_env(t_shell *sh, char **env);
+int		is_builtin(char *cmd);
+int		exec_builtin(t_shell *sh, char **cmd, t_exec *cmds);
 
 // exit.c
 int		ft_exit(char **argv, t_shell *shell);
 
-
 #endif
-
