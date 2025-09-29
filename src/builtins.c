@@ -5,9 +5,9 @@ int	is_builtin(char *cmd)
 	if (!cmd)
 		return (0);
 	return (/*!ft_strcmp(cmd, "echo") || */!ft_strcmp(cmd, "cd")
-		|| !ft_strcmp(cmd, "pwd") /*|| !ft_strcmp(cmd, "export")
-		|| !ft_strcmp(cmd, "unset") */ || !ft_strcmp(cmd, "env")
-		|| !ft_strcmp(cmd, "exit"));
+		|| !ft_strcmp(cmd, "pwd") /*|| !ft_strcmp(cmd, "export")*/
+		|| !ft_strcmp(cmd, "unset")  || !ft_strcmp(cmd, "env") /*
+		|| !ft_strcmp(cmd, "exit")*/); 
 }
 int	exec_builtin(t_shell *sh, char **cmd, t_exec *cmds)
 {
@@ -26,9 +26,9 @@ int	exec_builtin(t_shell *sh, char **cmd, t_exec *cmds)
 	else if (!ft_strcmp(cmd[0], "pwd"))
 		return (ft_pwd());
 	/*else if (!ft_strcmp(cmd->cmd, "export"))
-		return (ft_export(sh, &cmd->cmd));
-	else if (!ft_strcmp(cmd->cmd, "unset"))
-		return (ft_unset(sh, &cmd->cmd));*/
+		return (ft_export(sh, &cmd->cmd)); */
+	else if (!ft_strcmp(cmd[0], "unset"))
+		return (ft_unset(sh, cmd));
 	else if (!ft_strcmp(cmd[0], "env"))
 		return (ft_env(sh,cmd));
 	else if (!ft_strcmp(cmd[0], "exit"))
@@ -93,15 +93,17 @@ int ft_cd(t_shell *sh, char **cmd)
 	i = -1;
 	if (ccmd == 1)
 	{
-		while (ccmd == 1 && sh->env[++i])
-		{
 			path = get_env_value("HOME", sh);
 			if (path[0] == '\0')
 				return (write(2, "bash: cd: HOME not set\n", 23), g_exit_status = 1, 1);
 			if (chdir(path) == -1)
 				return (perror("cd"), free(path), g_exit_status = 1, 1);
 			free(path);
-		}
+	}
+	else if (ccmd == 2 && !ft_strcmp(cmd[1],"~"))
+	{
+		if(chdir(sh->home) == -1)
+			return (perror("cd"), g_exit_status = 1, 1);
 	}
 	else
 	{
@@ -139,8 +141,8 @@ int ft_cd(t_shell *sh, char **cmd)
 // 	return 0;
 // }
 
-// env
 
+// env
 int ft_env(t_shell *shell,char **cmd)
 {
 	if(cmd[1])
@@ -148,8 +150,24 @@ int ft_env(t_shell *shell,char **cmd)
 		printf("env: '%s': No such file or directory\n", cmd[1]);
 		return(g_exit_status = 127, 1);
 	}
-	int i = -1;
-	while(shell->env[++i])
-		printf("%s\n",shell->env[i]);
+	while(shell->t_env != NULL)
+	{
+		// printf("%s=",shell->t_env->key);
+		// printf("%s\n",shell->t_env->value);
+		// shell->t_env = shell->t_env->next;
+	}
+	return 0;
+}
+
+//unset
+int		ft_unset(t_shell *sh, char **cmd)
+{
+	int count = cmd_count(cmd);
+	while (count-- != 1)
+	{
+		char *path = get_env_value(cmd[count], sh);
+
+		free(path);
+	}
 	return 0;
 }

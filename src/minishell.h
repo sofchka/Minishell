@@ -24,6 +24,14 @@
 
 extern int	g_exit_status;
 
+typedef struct s_env
+{
+    char            *key;
+    char            *value;
+    struct s_env    *next;
+}   t_env;
+
+
 typedef enum e_data
 {
 	WORD,
@@ -57,6 +65,7 @@ typedef struct s_shell
 {
 	char			**env;
 	char			*home;
+	t_env			*t_env;
 	char			*input;
 	char			**tokens;
 	int				tok_count;
@@ -100,6 +109,7 @@ void	ft_free_execs(t_exec *cmds);
 char	**dup_env(char **envp);
 void	init_shell(t_shell *shell);
 void	reinit(t_shell **shell);
+void	init_env(t_shell *shell,char **envp);
 
 // signals.c
 void	set_signals(void);
