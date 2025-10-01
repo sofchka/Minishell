@@ -84,13 +84,11 @@ int cmd_count(char **cmd)
 int ft_cd(t_shell *sh, char **cmd)
 {
 	char	*path;
-	int		i;
 	int		ccmd;
 
 	ccmd = cmd_count(cmd);
 	if (ccmd > 2)
 		return (write(2, "bash: cd: too many arguments\n", 30), g_exit_status = 1, 1);
-	i = -1;
 	if (ccmd == 1)
 	{
 			path = get_env_value("HOME", sh);
@@ -122,7 +120,7 @@ int ft_cd(t_shell *sh, char **cmd)
 // {
 // 	int cd;
 // 	char *path;
-// 	//printf("lalalla");
+// 	//printf("lalalla");s
 // 	//printf("%s",cmd[1]);
 // 	int ccmd = cmd_count(cmd);
 // 	if(ccmd > 2)
@@ -145,29 +143,51 @@ int ft_cd(t_shell *sh, char **cmd)
 // env
 int ft_env(t_shell *shell,char **cmd)
 {
+	t_env* tmp;
+
+	tmp = shell->t_env;
 	if(cmd[1])
 	{
 		printf("env: '%s': No such file or directory\n", cmd[1]);
 		return(g_exit_status = 127, 1);
 	}
-	while(shell->t_env != NULL)
+	while(tmp != NULL)
 	{
-		// printf("%s=",shell->t_env->key);
-		// printf("%s\n",shell->t_env->value);
-		// shell->t_env = shell->t_env->next;
+		printf("%s=",tmp->key);
+		printf("%s\n",tmp->value);
+		tmp = tmp->next;
 	}
 	return 0;
 }
 
 //unset
+
+
 int		ft_unset(t_shell *sh, char **cmd)
 {
 	int count = cmd_count(cmd);
+	t_env* tmp;
+	t_env* prev = NULL;
 	while (count-- != 1)
 	{
-		char *path = get_env_value(cmd[count], sh);
-
-		free(path);
+		tmp = sh->t_env;
+		while(tmp != NULL)
+		{
+			if(!ft_strcmp(tmp->key, cmd[count]))
+			{
+				if (prev == NULL)
+					sh->t_env = tmp->next;
+				else
+				{
+					prev->next = tmp->next;
+					free(tmp->key);
+					free(tmp->value);
+					free(tmp);
+				}
+			}
+			prev = tmp;
+			tmp = tmp->next;
+		}
 	}
 	return 0;
 }
