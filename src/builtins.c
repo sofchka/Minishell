@@ -162,32 +162,39 @@ int ft_env(t_shell *shell,char **cmd)
 
 //unset
 
+void unset_env(t_shell *sh, char **cmd,int count)
+{
+	t_env* tmp;
+	t_env* prev;
+	tmp = sh->t_env;
+	prev = NULL;
+	while(tmp != NULL)
+	{
+		if(!ft_strcmp(tmp->key, cmd[count]))
+		{
+			if (prev == NULL)
+				sh->t_env = tmp->next;
+			else 
+				prev->next = tmp->next;		
+			free(tmp->key);
+			free(tmp->value);
+			free(tmp);
+			return ;
+		}
+		prev = tmp;
+		tmp = tmp->next;
+	}
+}
+
 
 int		ft_unset(t_shell *sh, char **cmd)
 {
+	if (!sh->t_env)
+		return 0;
 	int count = cmd_count(cmd);
-	t_env* tmp;
-	t_env* prev = NULL;
 	while (count-- != 1)
 	{
-		tmp = sh->t_env;
-		while(tmp != NULL)
-		{
-			if(!ft_strcmp(tmp->key, cmd[count]))
-			{
-				if (prev == NULL)
-					sh->t_env = tmp->next;
-				else
-				{
-					prev->next = tmp->next;
-					free(tmp->key);
-					free(tmp->value);
-					free(tmp);
-				}
-			}
-			prev = tmp;
-			tmp = tmp->next;
-		}
+		unset_env(sh,cmd,count);
 	}
 	return 0;
 }
