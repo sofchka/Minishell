@@ -2,20 +2,20 @@
 
 static t_exec	*new_exec_node(void)
 {
-	t_exec	*node;
+	t_exec	*n;
 
-	node = malloc(sizeof(t_exec));
-	if (!node)
+	n = malloc(sizeof(t_exec));
+	if (!n)
 		return (NULL);
-	node->cmd = NULL;
-	node->cmd2 = NULL;
-	node->token = NULL;
-	node->heredoc_fd = -1;
-	node->has_infile = 0;
-	node->has_outfile = 0;
-	node->next = NULL;
-	node->subs = NULL;
-	return (node);
+	n->cmd = NULL;
+	n->cmd2 = NULL;
+	n->token = NULL;
+	n->heredoc_fd = -1;
+	n->has_infile = 0;
+	n->has_outfile = 0;
+	n->next = NULL;
+	n->subs = NULL;
+	return (n);
 }
 
 static int	is_pipe_tok(char *s)
@@ -38,18 +38,18 @@ static int	is_redir_tok(char *s)
 
 static t_rsub	*new_sub(char *op, char *arg)
 {
-	t_rsub	*res;
+	t_rsub	*r;
 
-	res = malloc(sizeof(t_rsub));
-	if (!res)
+	r = malloc(sizeof(t_rsub));
+	if (!r)
 		return (NULL);
-	res->op = ft_strdup(op);
+	r->op = ft_strdup(op);
 	if (!ft_strncmp(op, "<<", 2))
-		res->arg = ft_strdup(arg);
+		r->arg = ft_strdup(arg);
 	else
-		res->arg = strip_quotes(arg);
-	res->next = NULL;
-	return (res);
+		r->arg = strip_quotes(arg);
+	r->next = NULL;
+	return (r);
 }
 
 static int	append_sub(t_exec *cur, char *op, char *arg)
@@ -70,30 +70,19 @@ static int	append_sub(t_exec *cur, char *op, char *arg)
 	return (!!it->next);
 }
 
-static void	append_word(t_exec *cur, char *word)
+static void	append_word(t_exec *cur, char *w)
 {
 	char	*tmp;
 
+	if (!w || !*w)
+		return ;
 	if (!cur->cmd)
 	{
-		cur->cmd = ft_strdup(word);
+		cur->cmd = ft_strdup(w);
 		return ;
 	}
 	tmp = ft_strjoin(cur->cmd, " ", 1);
-	cur->cmd = ft_strjoin(tmp, word, 1);
-}
-
-static int	handle_redir_token(t_exec *cur, char **tokens, int i)
-{
-	if (!tokens[i + 1])
-		return (i);
-	append_sub(cur, tokens[i], tokens[i + 1]);
-	cur->token = tokens[i];
-	if (!ft_strncmp(cur->token, "<<", 2))
-		cur->cmd2 = ft_strdup(tokens[i + 1]);
-	else
-		cur->cmd2 = strip_quotes(tokens[i + 1]);
-	return (i + 2);
+	cur->cmd = ft_strjoin(tmp, w, 1);
 }
 
 t_exec	*split_by_pipe(t_shell *sh, int i, char *tok)
@@ -112,24 +101,37 @@ t_exec	*split_by_pipe(t_shell *sh, int i, char *tok)
 		{
 			cur->next = new_exec_node();
 			cur = cur->next;
+			i++;
+			continue ;
 		}
-		else if (is_redir_tok(sh->tokens[i]))
-			i = handle_redir_token(cur, sh->tokens, i);
-		else if (ft_strncmp(sh->tokens[i], " ", 2) != 0)
+		if (is_redir_tok(sh->tokens[i]))
+		{
+			if (sh->tokens[i + 1])
+			{
+				append_sub(cur, sh->tokens[i], sh->tokens[i + 1]);
+				cur->token = sh->tokens[i];
+				if (!ft_strncmp(cur->token, "<<", 2))
+					cur->cmd2 = ft_strdup(sh->tokens[i + 1]);
+				else
+					cur->cmd2 = strip_quotes(sh->tokens[i + 1]);
+				i += 2;
+				continue ;
+			}
+		}
+		if (ft_strncmp(sh->tokens[i], " ", 2) != 0)
 			append_word(cur, sh->tokens[i]);
 		i++;
 	}
+	t_exec	*tmp;
 
-	// t_exec	*tmp;
-
-	// tmp = head;
-	// while (tmp)
-	// {
-	// 	printf("NODE: cmd=[%s] cmd2=[%s] token=[%s]\n",
-	// 		tmp->cmd ? tmp->cmd : "NULL",
-	// 		tmp->cmd2 ? tmp->cmd2 : "NULL",
-	// 		tmp->token ? tmp->token : "NULL");
-	// 	tmp = tmp->next;
-	// }
+	tmp = head;
+	while (tmp)
+	{
+		printf("NODE: cmd=[%s] cmd2=[%s] token=[%s]\n",
+			tmp->cmd ? tmp->cmd : "NULL",
+			tmp->cmd2 ? tmp->cmd2 : "NULL",
+			tmp->token ? tmp->token : "NULL");
+		tmp = tmp->next;
+	}
 	return (head);
 }
