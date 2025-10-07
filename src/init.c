@@ -69,8 +69,8 @@ void	init_env(t_shell *shell, char **envp)
 		{
 			printf("error");
 		}
-		new_node->key = ft_substr(envp[i], 0, ft_strchr(envp[i],'=') - envp[i]);
-		new_node->value = ft_strdup(ft_strchr(envp[i],'=') + 1);
+		new_node->key = ft_substr(envp[i], 0, ft_strchr(envp[i], '=') - envp[i]);
+		new_node->value = ft_strdup(ft_strchr(envp[i], '=') + 1);
 		new_node->next = NULL;
 		if (shell->t_env == NULL)
 			shell->t_env = new_node;

@@ -33,7 +33,9 @@ static void	write_heredoc_input(int fd, char *delimiter)
 {
 	char	*line;
 
-	while (1)
+	signal(SIGINT, sigint_heredoc);
+	signal(SIGQUIT, SIG_IGN);
+	while (1 && g_exit_status != 130)
 	{
 		line = readline("> ");
 		if (!line || !ft_strncmp(line, delimiter,
@@ -42,10 +44,16 @@ static void	write_heredoc_input(int fd, char *delimiter)
 			free(line);
 			break ;
 		}
+		if (g_exit_status == 130)
+		{
+			free(line);
+			break ;
+		}
 		write(fd, line, ft_strlen(line));
 		write(fd, "\n", 1);
 		free(line);
 	}
+	set_signals();
 }
 
 static void	collect_one_heredoc(t_exec *owner, char *delim)
@@ -59,6 +67,12 @@ static void	collect_one_heredoc(t_exec *owner, char *delim)
 	write_heredoc_input(p[1], clean);
 	free(clean);
 	close(p[1]);
+	if (g_exit_status == 130)
+	{
+		close(p[0]);
+		owner->heredoc_fd = -1;
+		return ;
+	}
 	if (owner->heredoc_fd > 0)
 		close(owner->heredoc_fd);
 	owner->heredoc_fd = p[0];
