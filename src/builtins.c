@@ -6,8 +6,8 @@ int	is_builtin(char *cmd)
 		return (0);
 	return (/*!ft_strcmp(cmd, "echo") || */!ft_strcmp(cmd, "cd")
 		|| !ft_strcmp(cmd, "pwd") /*|| !ft_strcmp(cmd, "export")*/
-		|| !ft_strcmp(cmd, "unset")  || !ft_strcmp(cmd, "env") /*
-		|| !ft_strcmp(cmd, "exit")*/); 
+		|| !ft_strcmp(cmd, "unset") || !ft_strcmp(cmd, "env")
+		|| !ft_strcmp(cmd, "exit"));
 }
 int	exec_builtin(t_shell *sh, char **cmd, t_exec *cmds)
 {
@@ -55,12 +55,14 @@ int	ft_pwd(void)
 }
 //cd
 
-int cmd_count(char **cmd)
+int	cmd_count(char **cmd)
 {
-	int i = 0;
-	while(cmd[i] && cmd)
-		i++; 
-	return i;
+	int	i;
+
+	i = 0;
+	while (cmd[i] && cmd)
+		i++;
+	return (i);
 }
 
 // char	*env_value(char *name, t_shell *sh)
@@ -81,7 +83,7 @@ int cmd_count(char **cmd)
 // 	return (NULL);
 // }
 
-int ft_cd(t_shell *sh, char **cmd)
+int	ft_cd(t_shell *sh, char **cmd)
 {
 	char	*path;
 	int		ccmd;
@@ -91,12 +93,12 @@ int ft_cd(t_shell *sh, char **cmd)
 		return (write(2, "bash: cd: too many arguments\n", 30), g_exit_status = 1, 1);
 	if (ccmd == 1)
 	{
-			path = get_env_value("HOME", sh);
-			if (path[0] == '\0')
-				return (write(2, "bash: cd: HOME not set\n", 23), g_exit_status = 1, 1);
-			if (chdir(path) == -1)
-				return (perror("cd"), free(path), g_exit_status = 1, 1);
-			free(path);
+		path = get_env_value("HOME", sh);
+		if (path[0] == '\0')
+			return (write(2, "bash: cd: HOME not set\n", 23), g_exit_status = 1, 1);
+		if (chdir(path) == -1)
+			return (perror("cd"), free(path), g_exit_status = 1, 1);
+		free(path);
 	}
 	else if (ccmd == 2 && !ft_strcmp(cmd[1],"~"))
 	{

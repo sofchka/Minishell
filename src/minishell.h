@@ -109,7 +109,7 @@ void	ft_free_execs(t_exec *cmds);
 char	**dup_env(char **envp);
 void	init_shell(t_shell *shell);
 void	reinit(t_shell **shell);
-void	init_env(t_shell *shell,char **envp);
+void	init_env(t_shell *shell, char **envp);
 
 // signals.c
 void	set_signals(void);
@@ -126,7 +126,13 @@ int		handle_redirection(t_exec *data);
 int		redir_output(char *file, char *type, t_exec *cmds);
 
 // splits.c
-t_exec	*split_by_pipe(t_shell *sh, int i, char *token);
+t_exec	*split_by_pipe(t_shell *sh, int i, t_exec *head, t_exec *cur);
+
+// splits_2.c
+t_rsub	*new_sub(char *op, char *arg);
+int		is_redir_tok(char *s);
+int		is_pipe_tok(char *s);
+t_exec	*new_exec_node(void);
 
 // find_path.c
 void	ft(char **str);

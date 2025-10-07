@@ -38,7 +38,6 @@ void	main_loop(t_shell *shell, char *expanded)
 	}
 }
 
-
 int	main(int argc, char **argv, char **envp)
 {
 	t_shell	shell;
@@ -47,20 +46,13 @@ int	main(int argc, char **argv, char **envp)
 	g_exit_status = 0;
 	if (argc != 1)
 	{
-		 write(2, "\033[1;31mNo arguments needed\n", 28);
+		write(2, "\033[1;31mNo arguments needed\n", 28);
 		return (1);
 	}
 	init_shell(&shell);
-	init_env(&shell,envp);
-	// while(shell.t_env != NULL)
-	// {
-	// 	printf("%s=",shell.t_env->key);
-	// 	printf("%s\n",shell.t_env->value);
-	// 	shell.t_env = shell.t_env->next;
-	// }
+	init_env(&shell, envp);
 	shell.env = dup_env(envp);
 	shell.home = get_env_value("HOME", &shell);
-	printf("debug: HOME=[%s]\n", shell.home);
 	if (!shell.env)
 	{
 		write(2, "\033[1;31mEnv init Error\n", 23);

@@ -54,25 +54,28 @@ void	reinit(t_shell **shell)
 	restore_std(*shell);
 }
 
-void init_env(t_shell *shell,char **envp)
+void	init_env(t_shell *shell, char **envp)
 {
-	t_env* tail = NULL;
-	t_env* new_node;
-	int i = -1;
-	while(envp[++i])
+	t_env	*tail;
+	t_env	*new_node;
+	int		i;
+
+	i = -1;
+	tail = NULL;
+	while (envp[++i])
 	{
 		new_node = malloc(sizeof(t_env));
-		if(!new_node)
+		if (!new_node)
 		{
 			printf("error");
 		}
 		new_node->key = ft_substr(envp[i], 0, ft_strchr(envp[i],'=') - envp[i]);
 		new_node->value = ft_strdup(ft_strchr(envp[i],'=') + 1);
 		new_node->next = NULL;
-		if(shell->t_env == NULL)
+		if (shell->t_env == NULL)
 			shell->t_env = new_node;
 		else
 			tail->next = new_node;
 		tail = new_node;
 	}
-} 
+}
