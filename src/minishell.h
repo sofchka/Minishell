@@ -165,7 +165,7 @@ void	herdoc_handle(t_shell *sh, t_exec **data, int count);
 char	*strip_quotes(const char *s);
 
 // builtins.c
-int		ft_echo(char **args);
+int		ft_echo(t_shell *sh,char **cmd);
 int		ft_cd(t_shell *sh, char **cmd);
 int		ft_pwd(void);
 int		ft_export(t_shell *sh, char **args);

@@ -4,7 +4,7 @@ int	is_builtin(char *cmd)
 {
 	if (!cmd)
 		return (0);
-	return (/*!ft_strcmp(cmd, "echo") || */!ft_strcmp(cmd, "cd")
+	return (!ft_strcmp(cmd, "echo") || !ft_strcmp(cmd, "cd")
 		|| !ft_strcmp(cmd, "pwd") /*|| !ft_strcmp(cmd, "export")*/
 		|| !ft_strcmp(cmd, "unset") || !ft_strcmp(cmd, "env")
 		|| !ft_strcmp(cmd, "exit"));
@@ -19,8 +19,8 @@ int	exec_builtin(t_shell *sh, char **cmd, t_exec *cmds)
 	// cd export unset exit aranc fork
 	if (!cmd)
 		return (1);
-	/*if (!ft_strcmp(cmd->cmd, "echo"))
-		return (ft_echo(&cmd->cmd));*/
+	if (!ft_strcmp(cmd[0], "echo"))
+		return (ft_echo(sh,cmd));
 	else if (!ft_strcmp(cmd[0], "cd"))
 		return (ft_cd(sh, cmd));
 	else if (!ft_strcmp(cmd[0], "pwd"))
@@ -198,5 +198,81 @@ int		ft_unset(t_shell *sh, char **cmd)
 	{
 		unset_env(sh,cmd,count);
 	}
+	return 0;
+}
+
+//echo
+
+int is_n(char *str)
+{
+	while(*str && ((*str >= '\t' && *str <= '\r') || *str == ' '))
+		str++;
+	if (*str != '-')
+		return 0;
+	str++;
+	if(*str == '\0')
+		return 0;
+	while(*str)
+	{
+		if(*str != 'n' && *str != 'e')
+			return 0;
+		str++;
+	}
+	return 1;
+}
+
+int ft_echo(t_shell *sh,char **cmd)
+{
+	int flag = 0;
+	int arg = 1;
+
+	while(cmd[arg] && is_n(cmd[arg]))
+	{
+		flag = 1;
+		arg++;
+	}
+
+	while (cmd[arg]) 
+	{
+		int i = 0;
+		if (cmd[arg][i] == '$' && cmd[arg][i + 1]) 
+		{
+			i++;
+			int var_start = i;
+			while (cmd[arg][i] && (ft_isalnum(cmd[arg][i]) || cmd[arg][i] == '_')) 
+			{
+				i++;
+			}
+			int var_len = i - var_start;
+			if (var_len > 0) 
+			{
+				char *var_name = ft_substr(cmd[arg], var_start, var_len);
+				t_env *tmp = sh->t_env;
+				while (tmp != NULL) 
+				{
+					if (!ft_strcmp(tmp->key, var_name))
+					{
+                   		printf("%s", tmp->value);
+                    	break;
+                	}
+					tmp = tmp->next;
+				}
+				free(var_name);
+			}
+		} 
+		else
+		{
+			while(cmd[arg][i])
+			{
+       			write(1,&cmd[arg][i],1);
+    			i++;
+			}
+    	}
+		arg++;
+		if(cmd[arg])
+			write(1," ",1);
+	}
+	if (!flag)
+		printf("\n");
 	return 0;
 }
