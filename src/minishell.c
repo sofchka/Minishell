@@ -14,6 +14,9 @@ static void	init_vars(t_shell *sh, t_vars *vars)
 	if (!vars->pids)
 		ft_exit_perror("pids malloc");
 	i = 0;
+	while (i < sh->pipe_count + 1)
+		vars->pids[i++] = -1;
+	i = 0;
 	while (i < sh->pipe_count)
 	{
 		if (pipe(vars->pfd[i]) == -1)
@@ -81,14 +84,12 @@ static void	wait_and_clean(t_shell *sh, t_vars *vars,
 	g_exit_status = WEXITSTATUS(status);
 }
 
-int	start(t_shell *sh)
+int	start(t_shell *sh, int status)
 {
 	t_exec	*cmds;
 	t_vars	vars;
 	char	**split_arg;
-	int		status;
 
-	status = 0;
 	cmds = split_by_pipe(sh, 0, new_exec_node(), NULL);
 	if (sh->heredocs > 0)
 		herdoc_handle(sh, &cmds, 0);

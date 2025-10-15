@@ -48,3 +48,23 @@ void	ft_free_execs(t_exec *cmds)
 	}
 }
 
+void	free_env(t_env *env)
+{
+	t_env	*tmp;
+	t_env	*current;
+
+	if (!env)
+		return ;
+	current = env;
+	while (current)
+	{
+		tmp = current->next;
+		if (current->key)
+			free(current->key);
+		if (current->value)
+			free(current->value);
+		free(current);
+		current = tmp;
+	}
+	env = NULL;
+}

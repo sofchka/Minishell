@@ -104,6 +104,7 @@ typedef struct s_exp
 void	ft_free(char **arg);
 void	ft_exit_perror(const char *msg);
 void	ft_free_execs(t_exec *cmds);
+void	free_env(t_env *env);
 
 // init.c
 char	**dup_env(char **envp);
@@ -142,7 +143,7 @@ char	*find_cmd(char *command, char **envp, int i, char *tmp);
 
 // minishell.c
 void	redirections_execve(t_exec *cmds, t_vars *vars, int i, t_shell *sh);
-int		start(t_shell *sh);
+int		start(t_shell *sh, int status);
 
 // expend.c
 char	*expand_vars(char *input, t_shell *shell);

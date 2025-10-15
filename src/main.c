@@ -10,6 +10,7 @@ void	main_loop(t_shell *shell, char *expanded)
 		if (!shell->input)
 		{
 			write(STDOUT_FILENO, "exit\n", 5);
+			free(shell->input);
 			break ;
 		}
 		if (*shell->input == '\0')
@@ -29,7 +30,7 @@ void	main_loop(t_shell *shell, char *expanded)
 		if (!shell->tokens || !shell->tokens[0])
 		{
 			free(shell->input);
-			continue;
+			continue ;
 		}
 		// int i = 0;
 		// while (shell->tokens[i])
@@ -37,7 +38,7 @@ void	main_loop(t_shell *shell, char *expanded)
 		// 	printf(" [%s]\n", shell->tokens[i]);
 		// 	i++;
 		// }
-		if (start(shell) == -1)
+		if (start(shell, 0) == -1)
 			break ;
 		reinit(&shell);
 	}
@@ -66,6 +67,8 @@ int	main(int argc, char **argv, char **envp)
 	set_signals();
 	main_loop(&shell, NULL);
 	rl_clear_history();
+	free_env(shell.t_env);
+	free(shell.home);
 	ft_free(shell.env);
 	return (g_exit_status);
 }
