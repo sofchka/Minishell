@@ -103,6 +103,7 @@ int	start(t_shell *sh)
 			ft_free_execs(cmds);
 			return (0);
 		}
+		ft_free(split_arg);
 	}
 	init_vars(sh, &vars);
 	exec_all(sh, &vars, cmds);

@@ -34,12 +34,16 @@ static void	handle_special_cmds(t_exec *cmds, t_shell *sh)
 	{
 		ft_putstr_fd("shell: .: filename argument required\n", STDERR_FILENO);
 		ft_putstr_fd(".: usage: . filename [arguments]\n", STDERR_FILENO);
+		restore_std(sh);
+		ft_free_execs(cmds);
 		exit(2);
 	}
 	if (ft_strncmp(cmds->cmd, "..", 3) == 0)
 	{
 		restore_std(sh);
 		print_error(cmds->cmd, "command not found");
+		restore_std(sh);
+		ft_free_execs(cmds);
 		exit(127);
 	}
 }

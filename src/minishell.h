@@ -4,9 +4,9 @@
 # include "../libft/libft.h"
 # include <stdio.h>      // printf, perror
 # include <stdlib.h>     // malloc, free, getenv, exit
-# include <unistd.h>     // write, access, read, close, 
+# include <unistd.h>     // write, access, read, close,
 //fork, dup, dup2, isatty, ttyname, ttyslot, getcwd, chdir
-# include <sys/types.h>  // opendir, readdir, wait, waitpid, 
+# include <sys/types.h>  // opendir, readdir, wait, waitpid,
 //wait3, wait4, stat, lstat, fstat, kill, signal related
 # include <sys/wait.h>   // wait, waitpid, wait3, wait4
 # include <sys/stat.h>   // stat, lstat, fstat
@@ -17,7 +17,7 @@
 # include <termios.h>    // tcsetattr, tcgetattr
 # include <termcap.h>    // tgetent, tgetflag, tgetnum, tgetstr, tgoto, tputs
 # include <sys/ioctl.h>  // ioctl
-# include <readline/readline.h>   // readline, rl_clear_history, 
+# include <readline/readline.h>   // readline, rl_clear_history,
 //rl_on_new_line, rl_replace_line, rl_redisplay
 # include <readline/history.h>    // add_history
 # include <errno.h>
@@ -162,10 +162,10 @@ char	*ft_join(char *a, char *b, char *c);
 
 // heredoc.c
 void	herdoc_handle(t_shell *sh, t_exec **data, int count);
-char	*strip_quotes(const char *s);
+char	*strip_quotes(char *s, char *res);
 
 // builtins.c
-int		ft_echo(t_shell *sh,char **cmd);
+int		ft_echo(t_shell *sh, char **cmd);
 int		ft_cd(t_shell *sh, char **cmd);
 int		ft_pwd(void);
 int		ft_export(t_shell *sh, char **args);

@@ -47,7 +47,7 @@ t_rsub	*new_sub(char *op, char *arg)
 	if (!ft_strncmp(op, "<<", 2))
 		r->arg = ft_strdup(arg);
 	else
-		r->arg = strip_quotes(arg);
+		r->arg = strip_quotes(arg, ft_strdup(""));
 	r->next = NULL;
 	return (r);
 }

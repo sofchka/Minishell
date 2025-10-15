@@ -46,9 +46,13 @@ char	*expand_loop(t_exp e, int r)
 {
 	while (e.in[e.i])
 	{
-		if (!e.sq && !e.dq && e.in[e.i] == '<' && e.in[e.i + 1] == '<')
+		if (!e.sq && !e.dq && e.in[e.i] == '<'
+			&& e.in[e.i + 1] != '\0' && e.in[e.i + 1] == '<')
+		{
 			if (!copy_heredoc(&e, 0))
 				return (free(e.out), NULL);
+			continue ;
+		}
 		r = handle_quote(&e);
 		if (r == 0)
 			return (free(e.out), NULL);

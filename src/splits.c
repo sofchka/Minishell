@@ -40,7 +40,7 @@ void	split_by_pipe_2(t_shell *sh, int *i, t_exec *cur)
 	if (!ft_strncmp(cur->token, "<<", 2))
 		cur->cmd2 = ft_strdup(sh->tokens[*i + 1]);
 	else
-		cur->cmd2 = strip_quotes(sh->tokens[*i + 1]);
+		cur->cmd2 = strip_quotes(sh->tokens[*i + 1], ft_strdup(""));
 	*i += 2;
 }
 
