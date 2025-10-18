@@ -5,7 +5,7 @@ int	is_builtin(char *cmd)
 	if (!cmd)
 		return (0);
 	return (!ft_strcmp(cmd, "echo") || !ft_strcmp(cmd, "cd")
-		|| !ft_strcmp(cmd, "pwd") /*|| !ft_strcmp(cmd, "export")*/
+		|| !ft_strcmp(cmd, "pwd") || !ft_strcmp(cmd, "export")
 		|| !ft_strcmp(cmd, "unset") || !ft_strcmp(cmd, "env")
 		|| !ft_strcmp(cmd, "exit"));
 }
@@ -25,8 +25,8 @@ int	exec_builtin(t_shell *sh, char **cmd, t_exec *cmds)
 		return (ft_cd(sh, cmd));
 	else if (!ft_strcmp(cmd[0], "pwd"))
 		return (ft_pwd());
-	/*else if (!ft_strcmp(cmd->cmd, "export"))
-		return (ft_export(sh, &cmd->cmd)); */
+	else if (!ft_strcmp(cmd[0], "export"))
+		return (ft_export(sh, cmd));
 	else if (!ft_strcmp(cmd[0], "unset"))
 		return (ft_unset(sh, cmd));
 	else if (!ft_strcmp(cmd[0], "env"))
@@ -155,8 +155,11 @@ int ft_env(t_shell *shell,char **cmd)
 	}
 	while(tmp != NULL)
 	{
-		printf("%s=",tmp->key);
-		printf("%s\n",tmp->value);
+		if(tmp->key && tmp->value)
+		{
+			printf("%s=",tmp->key);
+			printf("%s\n",tmp->value);
+		}
 		tmp = tmp->next;
 	}
 	return 0;
@@ -275,4 +278,147 @@ int ft_echo(t_shell *sh,char **cmd)
 	if (!flag)
 		printf("\n");
 	return 0;
+}
+
+
+// export
+
+static void ft_print_export(t_shell *sh)
+{
+	t_env *node = sh->t_env;
+	int count = 0;
+	while(node != NULL)
+	{
+		count++;
+		node = node->next;
+	}
+	if(!count)
+		return;
+	t_env **arr = malloc(sizeof(t_env *) * count);
+	if(!arr)
+		return;
+	node = sh->t_env;
+	int i = 0;
+	while(node != NULL)
+	{
+		arr[i++] = node;
+		node = node->next;
+	}
+	i = 0;
+	while(i < count - 1)
+	{
+		int j = i + 1;
+		while(j < count)
+		{
+			if(strcmp(arr[i]->key,arr[j]->key) > 0)
+			{
+				t_env *tmp = arr[i];
+				arr[i] = arr[j];
+				arr[j] = tmp;
+			}
+			j++;
+		}
+		i++;
+	}
+	i = 0;
+	while (i < count)
+    {
+        if (arr[i]->value)
+            printf("declare -x %s=\"%s\"\n", arr[i]->key, arr[i]->value);
+        else
+            printf("declare -x %s\n", arr[i]->key);
+        i++;
+    }
+	free(arr);
+}
+int valid_key(char *str)
+{
+    int i = 0;
+    if (!str || (!isalpha(str[0]) && str[0] != '_'))
+        return 0;
+
+    i = 1;
+    while (str[i] && str[i] != '=')
+    {
+        if (!isalnum(str[i]) && str[i] != '_')
+            return 0;
+        i++;
+    }
+    return 1;
+}
+
+int export_env(t_shell *sh, char *arg)
+{
+    if (!valid_key(arg))
+    {
+        printf("export: `%s': not a valid identifier\n", arg);
+        return 1;
+    }
+
+    char *eq = ft_strchr(arg, '=');
+    char *key;
+    char *value = NULL;
+
+    if (eq)
+    {
+        key = ft_strndup(arg, eq - arg);
+        value = ft_strdup(eq + 1);
+		printf("value:%s\n",value);
+    }
+    else
+        key = strdup(arg);
+
+    if (!key || (eq && !value))
+    {
+        free(key);
+        free(value);
+        return 1;
+    }
+    t_env *node = sh->t_env;
+    while (node != NULL)
+    {
+        if (strcmp(node->key, key) == 0)
+        {
+            if(value != NULL)
+			{
+				free(node->value);
+				node->value = value;
+			}
+			else
+				free(value);
+			free(key);
+			return 0;
+        }
+        node = node->next;
+    }
+
+    t_env *new_node = malloc(sizeof(t_env));
+    if (!new_node)
+    {
+        free(key);
+        free(value);
+        return 1;
+    }
+
+    new_node->key = key;
+    new_node->value = value;
+    new_node->next = sh->t_env;
+    sh->t_env = new_node;
+
+    return 0;
+}
+
+int ft_export(t_shell *sh,char **cmd)
+{
+	int count = cmd_count(cmd);
+	if (count == 1)
+		ft_print_export(sh);
+	else
+	{
+		int i = 1;
+		while(i < count)
+			if(export_env(sh,cmd[i++]))
+				return 0;
+	}
+	return 1;
 }
