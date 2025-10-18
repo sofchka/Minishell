@@ -199,11 +199,11 @@ int		ft_unset(t_shell *sh, char **cmd)
 		unset_env(sh,cmd,count);
 	}
 	return 0;
-}
+}g
 
 //echo
 
-int is_n(char *str)
+int is_n_e(char *str)
 {
 	while(*str && ((*str >= '\t' && *str <= '\r') || *str == ' '))
 		str++;
@@ -226,7 +226,7 @@ int ft_echo(t_shell *sh,char **cmd)
 	int flag = 0;
 	int arg = 1;
 
-	while(cmd[arg] && is_n(cmd[arg]))
+	while(cmd[arg] && is_n_e(cmd[arg]))
 	{
 		flag = 1;
 		arg++;
