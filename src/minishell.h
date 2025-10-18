@@ -40,6 +40,7 @@ typedef enum e_data
 	REDIR_OUT,
 	APPEND,
 	HEREDOC,
+	T_REDIR_IN,
 }			t_data;
 
 typedef struct s_rsub

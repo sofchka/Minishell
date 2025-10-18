@@ -36,9 +36,9 @@ static int	if_case(t_shell *sh, int i, int *len)
 				"<", 1) == 0 && (is_operator(sh->tokens[i + 1], len, &type)
 				|| !sh->tokens[i + 1])) || (ft_strncmp(sh->tokens[i], "<<",
 				2) == 0 && (is_operator(sh->tokens[i + 1], len, &type)
-				|| !sh->tokens[i + 1])))
-		// || (ft_strncmp(sh->tokens[i], "|", 1) == 0
-		// 	&& ft_strncmp(sh->tokens[i + 1], "|", 1) == 0))
+				|| !sh->tokens[i + 1]))
+		|| (ft_strncmp(sh->tokens[i], "|", 1) == 0 && sh->tokens[i + 1]
+			&& ft_strncmp(sh->tokens[i + 1], "|", 1) == 0))
 		return (1);
 	return (0);
 }
@@ -74,12 +74,11 @@ int	syntax_error(t_shell *sh)
 	i = 0;
 	while (sh->tokens[i])
 	{
-		if (i == 0 && (ft_strncmp(sh->tokens[i], "|", 1) == 0))
-		{
-			write(STDERR_FILENO,
-				"shell: syntax error near unexpected token `|'\n", 46);
-			return (1);
-		}
+		if ((i == 0 && (ft_strncmp(sh->tokens[i], "|", 1) == 0))
+			|| (ft_strncmp(sh->tokens[i], "||", 2) == 0 && !sh->tokens[i + 1]))
+			return (write(STDERR_FILENO,
+					"shell: syntax error near unexpected token `|'\n",
+					46));
 		else if (if_case(sh, i, &len))
 		{
 			if (!sh->tokens[i + 1])

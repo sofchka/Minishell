@@ -24,6 +24,8 @@ int	is_operator(const char *s, int *len, t_data *type)
 {
 	if (!s || !*s)
 		return (0);
+	if (s[0] == '<' && s[1] == '<' && s[2] == '<')
+		return (*len = 3, *type = T_REDIR_IN, 1);
 	if (s[0] == '|' && s[1] == '|')
 		return (*len = 2, *type = PIPE, 1);
 	if (s[0] == '>' && s[1] == '>')
