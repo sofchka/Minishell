@@ -199,7 +199,7 @@ int		ft_unset(t_shell *sh, char **cmd)
 		unset_env(sh,cmd,count);
 	}
 	return 0;
-}g
+}
 
 //echo
 
