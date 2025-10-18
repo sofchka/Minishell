@@ -51,9 +51,11 @@ int	isnumeric(char *arg)
 	int	i;
 
 	i = 0;
+	while (arg[i] == '-' || arg[i] == '+')
+		i++;
 	while (arg[i] && ft_isdigit(arg[i]))
 		i++;
-	if (!arg[i])
+	if (!arg[i] && ft_isdigit(arg[i - 1]))
 		return (1);
 	return (0);
 }
