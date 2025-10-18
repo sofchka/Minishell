@@ -57,7 +57,7 @@ static void	handle_builtin_or_path(t_exec *cmds, t_vars *vars, t_shell *sh)
 		ft_free_execs(cmds);
 		exit(g_exit_status);
 	}
-	vars->path = find_cmd(cmds->cmd, sh->env, 0, NULL);
+	vars->path = find_cmd(cmds->cmd, sh->t_env, 0, NULL);
 	if (!vars->path)
 	{
 		restore_std(sh);
@@ -70,7 +70,8 @@ static void	handle_builtin_or_path(t_exec *cmds, t_vars *vars, t_shell *sh)
 	}
 }
 
-static void	check_directory_and_exec(t_exec *cmds, t_vars *vars, t_shell *sh)
+static int	check_directory_and_exec(t_exec *cmds, t_vars *vars,
+		t_shell *sh, char **env_arr)
 {
 	struct stat	st;
 
@@ -82,7 +83,7 @@ static void	check_directory_and_exec(t_exec *cmds, t_vars *vars, t_shell *sh)
 		exit(126);
 	}
 	errno = 0;
-	execve(vars->path, vars->cmd, sh->env);
+	execve(vars->path, vars->cmd, env_arr);
 	restore_std(sh);
 	if (errno == ENOENT)
 		print_error(cmds->cmd, "No such file or directory");
@@ -92,17 +93,23 @@ static void	check_directory_and_exec(t_exec *cmds, t_vars *vars, t_shell *sh)
 		print_error(cmds->cmd, "Exec format error");
 	else
 		ft_exit_perror("shell");
-	free(vars->path);
-	ft_free(vars->cmd);
-	if (errno == ENOENT)
-		exit(127);
-	exit(126);
+	return (errno);
 }
 
 void	redirections_execve(t_exec *cmds, t_vars *vars, int i, t_shell *sh)
 {
+	int		status;
+	char	**env_arr;
+
 	pipes_and_redir(cmds, vars, i, sh);
 	handle_special_cmds(cmds, sh);
 	handle_builtin_or_path(cmds, vars, sh);
-	check_directory_and_exec(cmds, vars, sh);
+	env_arr = env_list_to_array(sh->t_env, 0);
+	status = check_directory_and_exec(cmds, vars, sh, env_arr);
+	free(vars->path);
+	ft_free(vars->cmd);
+	ft_free(env_arr);
+	if (status == ENOENT)
+		exit(127);
+	exit(126);
 }

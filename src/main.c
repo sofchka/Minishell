@@ -57,9 +57,8 @@ int	main(int argc, char **argv, char **envp)
 	}
 	init_shell(&shell);
 	init_env(&shell, envp);
-	shell.env = dup_env(envp);
 	shell.home = get_env_value("HOME", &shell);
-	if (!shell.env)
+	if (!shell.t_env)
 	{
 		write(2, "\033[1;31mEnv init Error\n", 23);
 		return (1);
@@ -69,6 +68,5 @@ int	main(int argc, char **argv, char **envp)
 	rl_clear_history();
 	free_env(shell.t_env);
 	free(shell.home);
-	ft_free(shell.env);
 	return (g_exit_status);
 }

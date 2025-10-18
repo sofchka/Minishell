@@ -2,21 +2,20 @@
 
 char	*get_env_value(char *name, t_shell *shell)
 {
+	t_env	*env;
 	size_t	len;
-	int		i;
 
-	if (!name || !shell || !shell->env)
+	if (!name || !shell || !shell->t_env)
 		return (ft_strdup(""));
 	if (name[0] == '?' && name[1] == '\0')
 		return (ft_itoa(g_exit_status));
 	len = ft_strlen(name);
-	i = 0;
-	while (shell->env[i])
+	env = shell->t_env;
+	while (env)
 	{
-		if (ft_strncmp(shell->env[i], name, len) == 0
-			&& shell->env[i][len] == '=')
-			return (ft_strdup(shell->env[i] + len + 1));
-		i++;
+		if (ft_strncmp(env->key, name, len) == 0 && env->key[len] == '\0')
+			return (ft_strdup(env->value));
+		env = env->next;
 	}
 	return (ft_strdup(""));
 }

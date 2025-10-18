@@ -53,3 +53,32 @@ char	*ft_join(char *a, char *b, char *c)
 	res = ft_strjoin(res, c, 1);
 	return (res);
 }
+
+char	**env_list_to_array(t_env *env, int count)
+{
+	int		i;
+	char	**arr;
+	char	*joined;
+	t_env	*tmp;
+
+	tmp = env;
+	while (tmp)
+	{
+		count++;
+		tmp = tmp->next;
+	}
+	arr = malloc(sizeof(char *) * (count + 1));
+	if (!arr)
+		return (NULL);
+	i = 0;
+	while (env)
+	{
+		joined = ft_strjoin(env->key, "=", 0);
+		arr[i] = ft_strjoin(joined, env->value, 1);
+		i++;
+		env = env->next;
+	}
+	arr[i] = NULL;
+	return (arr);
+}
+

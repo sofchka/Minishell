@@ -26,10 +26,10 @@ extern int	g_exit_status;
 
 typedef struct s_env
 {
-    char            *key;
-    char            *value;
-    struct s_env    *next;
-}   t_env;
+	char			*key;
+	char			*value;
+	struct s_env	*next;
+}			t_env;
 
 
 typedef enum e_data
@@ -63,7 +63,6 @@ typedef struct s_exec
 
 typedef struct s_shell
 {
-	char			**env;
 	char			*home;
 	t_env			*t_env;
 	char			*input;
@@ -107,7 +106,6 @@ void	ft_free_execs(t_exec *cmds);
 void	free_env(t_env *env);
 
 // init.c
-char	**dup_env(char **envp);
 void	init_shell(t_shell *shell);
 void	reinit(t_shell **shell);
 void	init_env(t_shell *shell, char **envp);
@@ -138,8 +136,8 @@ t_exec	*new_exec_node(void);
 
 // find_path.c
 void	ft(char **str);
-int		find_path(char **envp, char ***path);
-char	*find_cmd(char *command, char **envp, int i, char *tmp);
+int		find_path(t_env *env, char ***path);
+char	*find_cmd(char *command, t_env *env, int i, char *tmp);
 
 // minishell.c
 void	redirections_execve(t_exec *cmds, t_vars *vars, int i, t_shell *sh);
@@ -147,9 +145,9 @@ int		start(t_shell *sh, int status);
 
 // expend.c
 char	*expand_vars(char *input, t_shell *shell);
+char	*get_env_value(char *name, t_shell *shell);
 
 // expend_2.c
-char	*get_env_value(char *name, t_shell *shell);
 size_t	parse_var_name(const char *s, size_t *is_qmark);
 int		buf_grow(t_exp *e, size_t extra);
 int		copy_heredoc(t_exp *e, char q);
@@ -160,6 +158,7 @@ int		is_operator(const char *s, int *len, t_data *type);
 void	print_error(const char *arg, const char *msg);
 void	restore_std(t_shell *sh);
 char	*ft_join(char *a, char *b, char *c);
+char	**env_list_to_array(t_env *env, int count);
 
 // heredoc.c
 void	herdoc_handle(t_shell *sh, t_exec **data, int count);

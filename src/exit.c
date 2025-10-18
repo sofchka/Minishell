@@ -78,7 +78,6 @@ int	ft_exit(char **argv, t_shell *shell)
 		if (status < 0)
 			status += 256;
 	}
-	ft_free(shell->env);
 	free(shell->input);
 	ft_free(shell->tokens);
 	close(shell->stdin_backup);
