@@ -37,6 +37,8 @@ static int	if_case(t_shell *sh, int i, int *len)
 				|| !sh->tokens[i + 1])) || (ft_strncmp(sh->tokens[i], "<<",
 				2) == 0 && (is_operator(sh->tokens[i + 1], len, &type)
 				|| !sh->tokens[i + 1])))
+		// || (ft_strncmp(sh->tokens[i], "|", 1) == 0
+		// 	&& ft_strncmp(sh->tokens[i + 1], "|", 1) == 0))
 		return (1);
 	return (0);
 }

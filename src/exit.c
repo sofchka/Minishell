@@ -1,14 +1,15 @@
 #include "minishell.h"
 
-long	ft_atol(const char *str)
+long long	ft_atol(const char *str, int *state)
 {
-	long	result;
-	int		sign;
-	int		i;
+	unsigned long long	result;
+	int					sign;
+	int					i;
 
 	i = 0;
 	sign = 1;
 	result = 0;
+	*state = 0;
 	while (str[i] == ' ' || str[i] == '\t' || str[i] == '\n')
 		i++;
 	if (str[i] == '-' || str[i] == '+')
@@ -22,10 +23,13 @@ long	ft_atol(const char *str)
 		result = result * 10 + (str[i] - '0');
 		i++;
 	}
+	if ((sign == -1 && result > 9223372036854775808ULL)
+		|| (sign == 1 && result > 9223372036854775807ULL))
+		return (*state = 1);
 	return (sign * result);
 }
 
-void	ft_exit_loop(char **argv)
+void	ft_exit_loop(char **argv, int state)
 {
 	int		i;
 
@@ -34,7 +38,7 @@ void	ft_exit_loop(char **argv)
 	{
 		if (i == 0 && (argv[1][i] == '-' || argv[1][i] == '+'))
 			i++;
-		if (!ft_isdigit(argv[1][i]))
+		if (!ft_isdigit(argv[1][i]) || state == 1)
 		{
 			ft_putstr_fd("exit: ", STDERR_FILENO);
 			ft_putstr_fd(argv[1], STDERR_FILENO);
@@ -64,18 +68,20 @@ int	ft_exit(char **argv, t_shell *shell)
 {
 	int		status;
 	long	num;
+	int		state;
 
 	status = g_exit_status;
 	ft_putstr_fd("exit\n", STDOUT_FILENO);
 	if (argv[0] && argv[1])
 	{
-		if (argv[2] && isnumeric(argv[1]))
+
+		num = ft_atol(argv[1], &state);
+		if (argv[2] && isnumeric(argv[1]) && state == 0)
 		{
 			ft_putstr_fd("exit: too many arguments\n", STDERR_FILENO);
 			return (g_exit_status = 1, ft_free(argv), 1);
 		}
-		num = ft_atol(argv[1]);
-		ft_exit_loop(argv);
+		ft_exit_loop(argv, state);
 		status = (int)(num % 256);
 		if (status < 0)
 			status += 256;
