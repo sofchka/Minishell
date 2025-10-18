@@ -12,7 +12,6 @@ static int	handle_dollar_2(t_exp *e, size_t len, char **val)
 	return (0);
 }
 
-
 static int	handle_dollar(t_exp *e, size_t len)
 {
 	size_t	is_q;

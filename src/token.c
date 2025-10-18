@@ -105,7 +105,7 @@ int	token(t_shell *sh, int i, int j)
 		return (1);
 	if (token_loop(sh, i, j))
 		return (1);
-	if (syntax_error(sh))
+	if (syntax_error(sh, 0))
 	{
 		g_exit_status = 2;
 		ft_free(sh->tokens);

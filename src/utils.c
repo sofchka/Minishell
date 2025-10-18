@@ -83,4 +83,3 @@ char	**env_list_to_array(t_env *env, int count)
 	arr[i] = NULL;
 	return (arr);
 }
-

@@ -74,7 +74,6 @@ int	ft_exit(char **argv, t_shell *shell)
 	ft_putstr_fd("exit\n", STDOUT_FILENO);
 	if (argv[0] && argv[1])
 	{
-
 		num = ft_atol(argv[1], &state);
 		if (argv[2] && isnumeric(argv[1]) && state == 0)
 		{

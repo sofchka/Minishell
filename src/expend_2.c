@@ -92,7 +92,6 @@ int	copy_heredoc(t_exp *e, char q)
 	return (1);
 }
 
-
 int	handle_quote(t_exp *e)
 {
 	if (!e->dq && e->in[e->i] == '\'')

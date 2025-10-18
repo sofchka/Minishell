@@ -66,12 +66,10 @@ static int	pr_error(t_shell *sh, int i)
 	return (1);
 }
 
-int	syntax_error(t_shell *sh)
+int	syntax_error(t_shell *sh, int i)
 {
-	int	i;
 	int	len;
 
-	i = 0;
 	while (sh->tokens[i])
 	{
 		if ((i == 0 && (ft_strncmp(sh->tokens[i], "|", 1) == 0))

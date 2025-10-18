@@ -117,7 +117,7 @@ void	sigint_heredoc(int sig);
 
 // check.c
 int		has_open_quote(const char *s);
-int		syntax_error(t_shell *sh);
+int		syntax_error(t_shell *sh, int i);
 
 // token.c
 int		token(t_shell *sh, int i, int j);
