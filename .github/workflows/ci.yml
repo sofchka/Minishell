@@ -1,6 +1,10 @@
 name: Minishell CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
 jobs:
   build-and-test:
@@ -8,41 +12,45 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Клонируем твой проект
+      
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Устанавливаем зависимости
+     
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential libreadline-dev python3
 
-      # 3️⃣ Собираем Minishell
+     
       - name: Build Minishell
-        run: make
-
-      # 4️⃣ Проверяем, что бинарник собран
-      - name: Verify executable
         run: |
+          make clean
+          make
           if [ ! -f minishell ]; then
             echo "❌ Build failed!"
             exit 1
           fi
           echo "✅ Build success!"
 
-      # 5️⃣ Запускаем тесты из tests/test1
+     
+      - name: Verify executable
+        run: |
+          ./minishell --version || echo "⚠️ Minishell ran but returned error"
+
+     
       - name: Run external tester
         run: |
           cd tests/test1
+          chmod +x run_tests.sh 2>/dev/null || true
+          chmod +x test.sh 2>/dev/null || true
           echo "🧪 Running tester..."
           if [ -f run_tests.sh ]; then
-            bash run_tests.sh || true
+            ./run_tests.sh || echo "❌ Some tests failed"
           elif [ -f test.sh ]; then
-            bash test.sh || true
+            ./test.sh || echo "❌ Some tests failed"
           elif [ -f main.py ]; then
-            python3 main.py || true
+            python3 main.py || echo "❌ Some tests failed"
           else
             echo "⚠️ No known test entry found (run_tests.sh/test.sh/main.py)"
           fi
-
