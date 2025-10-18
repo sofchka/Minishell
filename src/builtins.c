@@ -255,6 +255,7 @@ int ft_echo(t_shell *sh,char **cmd)
 				{
 					if (!ft_strcmp(tmp->key, var_name))
 					{
+						printf("stex");
                    		printf("%s", tmp->value);
                     	break;
                 	}
@@ -265,12 +266,10 @@ int ft_echo(t_shell *sh,char **cmd)
 		} 
 		else
 		{
+			printf("stex");
 			while(cmd[arg][i])
-			{
-       			write(1,&cmd[arg][i],1);
-    			i++;
-			}
-    	}
+       			write(1,&cmd[arg][i++],1);
+		}
 		arg++;
 		if(cmd[arg])
 			write(1," ",1);
@@ -351,8 +350,8 @@ int export_env(t_shell *sh, char *arg)
 {
     if (!valid_key(arg))
     {
-        printf("export: `%s': not a valid identifier\n", arg);
-        return 1;
+        printf("bash: export: `%s': not a valid identifier\n", arg);
+        return 0;
     }
 
     char *eq = ft_strchr(arg, '=');
@@ -363,7 +362,6 @@ int export_env(t_shell *sh, char *arg)
     {
         key = ft_strndup(arg, eq - arg);
         value = ft_strdup(eq + 1);
-		printf("value:%s\n",value);
     }
     else
         key = strdup(arg);
@@ -372,7 +370,7 @@ int export_env(t_shell *sh, char *arg)
     {
         free(key);
         free(value);
-        return 1;
+        return 0;
     }
     t_env *node = sh->t_env;
     while (node != NULL)
@@ -387,7 +385,7 @@ int export_env(t_shell *sh, char *arg)
 			else
 				free(value);
 			free(key);
-			return 0;
+			return 1;
         }
         node = node->next;
     }
@@ -397,7 +395,7 @@ int export_env(t_shell *sh, char *arg)
     {
         free(key);
         free(value);
-        return 1;
+        return 0;
     }
 
     new_node->key = key;
@@ -405,7 +403,7 @@ int export_env(t_shell *sh, char *arg)
     new_node->next = sh->t_env;
     sh->t_env = new_node;
 
-    return 0;
+    return 1;
 }
 
 int ft_export(t_shell *sh,char **cmd)
@@ -417,8 +415,8 @@ int ft_export(t_shell *sh,char **cmd)
 	{
 		int i = 1;
 		while(i < count)
-			if(export_env(sh,cmd[i++]))
-				return 0;
+			if(!export_env(sh,cmd[i++]))
+				return 1;
 	}
-	return 1;
+	return (g_exit_status = 0,0);
 }
