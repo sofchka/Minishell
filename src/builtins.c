@@ -90,7 +90,7 @@ int	ft_cd(t_shell *sh, char **cmd)
 
 	ccmd = cmd_count(cmd);
 	if (ccmd > 2)
-		return (write(2, "bash: cd: too many arguments\n", 30), g_exit_status = 1, 1);
+		return (write(STDERR_FILENO, "bash: cd: too many arguments\n", 30), g_exit_status = 1, 1);
 	if (ccmd == 1)
 	{
 		path = get_env_value("HOME", sh);
@@ -321,8 +321,10 @@ int export_env(t_shell *sh, char *arg)
 {
 	if (!valid_key(arg))
 	{
-		printf("bash: export: `%s': not a valid identifier\n", arg);
-		return 0;
+		write(2, "bash: export: `", 15);
+		write(2, arg, strlen(arg));
+		write(2, "': not a valid identifier\n", 26);
+		return (0);
 	}
 
 	char *eq = ft_strchr(arg, '=');
