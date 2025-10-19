@@ -24,7 +24,7 @@ int	exec_builtin(t_shell *sh, char **cmd, t_exec *cmds)
 	else if (!ft_strcmp(cmd[0], "cd"))
 		return (ft_cd(sh, cmd));
 	else if (!ft_strcmp(cmd[0], "pwd"))
-		return (ft_pwd());
+		return (ft_pwd(sh));
 	else if (!ft_strcmp(cmd[0], "export"))
 		return (ft_export(sh, cmd));
 	else if (!ft_strcmp(cmd[0], "unset"))

@@ -167,7 +167,6 @@ char	*strip_quotes(char *s, char *res);
 // builtins.c
 int		ft_echo(t_shell *sh, char **cmd);
 int		ft_cd(t_shell *sh, char **cmd);
-int		ft_pwd(void);
 int		ft_export(t_shell *sh, char **args);
 int		ft_unset(t_shell *sh, char **args);
 int		ft_env(t_shell *sh, char **env);
@@ -196,6 +195,6 @@ void	ft_print_export(t_shell *sh);
 int		ft_env(t_shell *sh, char **cmd);
 
 // pwd.c
-int		ft_pwd(void);
+int		ft_pwd(t_shell *sh);
 
 #endif
