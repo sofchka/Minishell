@@ -179,8 +179,6 @@ int		ft_exit(char **argv, t_shell *shell);
 
 // unset.c
 int		ft_unset(t_shell *sh, char **cmd);
-void	unset_env(t_shell *sh, char *key);
-int		valid_unset_key(char *str);
 
 // cd.c
 int		ft_cd(t_shell *sh, char **cmd);
