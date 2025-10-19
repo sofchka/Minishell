@@ -1,6 +1,24 @@
 #include "minishell.h"
 
-int g_exit_status;
+int	g_exit_status;
+
+int	main_loop_help(t_shell *shell, char *expanded)
+{
+	expanded = expand_vars(shell->input, shell);
+	free(shell->input);
+	shell->input = expanded;
+	if (token(shell, 0, 0))
+	{
+		free(shell->input);
+		return (1);
+	}
+	if (!shell->tokens || !shell->tokens[0])
+	{
+		free(shell->input);
+		return (1);
+	}
+	return (0);
+}
 
 void	main_loop(t_shell *shell, char *expanded)
 {
@@ -19,25 +37,8 @@ void	main_loop(t_shell *shell, char *expanded)
 			continue ;
 		}
 		add_history(shell->input);
-		expanded = expand_vars(shell->input, shell);
-		free(shell->input);
-		shell->input = expanded;
-		if (token(shell, 0, 0))
-		{
-			free(shell->input);
+		if (main_loop_help(shell, expanded))
 			continue ;
-		}
-		if (!shell->tokens || !shell->tokens[0])
-		{
-			free(shell->input);
-			continue ;
-		}
-		// int i = 0;
-		// while (shell->tokens[i])
-		// {
-		// 	printf(" [%s]\n", shell->tokens[i]);
-		// 	i++;
-		// }
 		if (start(shell, 0) == -1)
 			break ;
 		reinit(&shell);

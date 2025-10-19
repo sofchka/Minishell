@@ -31,7 +31,6 @@ typedef struct s_env
 	struct s_env	*next;
 }			t_env;
 
-
 typedef enum e_data
 {
 	WORD,
@@ -177,5 +176,28 @@ int		exec_builtin(t_shell *sh, char **cmd, t_exec *cmds);
 
 // exit.c
 int		ft_exit(char **argv, t_shell *shell);
+
+// unset.c
+int		ft_unset(t_shell *sh, char **cmd);
+void	unset_env(t_shell *sh, char *key);
+int		valid_unset_key(char *str);
+
+// cd.c
+int		ft_cd(t_shell *sh, char **cmd);
+int		cmd_count(char **cmd);
+
+// echo.c
+int		is_n_e(char *str);
+int		ft_echo(t_shell *sh, char **cmd);
+
+// export.c
+int		ft_export(t_shell *sh, char **cmd);
+void	ft_print_export(t_shell *sh);
+
+// env.c
+int		ft_env(t_shell *sh, char **cmd);
+
+// pwd.c
+int		ft_pwd(void);
 
 #endif

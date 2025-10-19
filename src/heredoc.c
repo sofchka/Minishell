@@ -62,7 +62,6 @@ static void	collect_one_heredoc(t_exec *owner, char *delim)
 	if (pipe(p) == -1)
 		ft_exit_perror("pipe");
 	clean = strip_quotes(delim, ft_strdup(""));
-	printf("[%s]\n", clean);
 	write_heredoc_input(p[1], clean);
 	free(clean);
 	close(p[1]);

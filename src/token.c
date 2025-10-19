@@ -1,5 +1,19 @@
 #include "minishell.h"
 
+static void	count_tokens_help(const char *s, int *i, char q)
+{
+	if (s[*i] == '"' || s[*i] == '\'')
+	{
+		q = s[(*i)++];
+		while (s[*i] && s[*i] != q)
+			(*i)++;
+		if (s[*i] == q)
+			(*i)++;
+	}
+	else
+		(*i)++;
+}
+
 static int	count_tokens(const char *s)
 {
 	int		i;
@@ -23,19 +37,7 @@ static int	count_tokens(const char *s)
 		else
 		{
 			while (s[i] && !is_operator(&s[i], &len, &type))
-			{
-				if (s[i] == '"' || s[i] == '\'')
-				{
-					char q;
-					q = s[i++];
-					while (s[i] && s[i] != q)
-						i++;
-					if (s[i] == q)
-						i++;
-				}
-				else
-					i++;
-			}
+				count_tokens_help(s, &i, 0);
 			count++;
 		}
 	}
@@ -49,10 +51,7 @@ static char	*extract_token(const char *s, int *i, int start, int end)
 	t_data	type;
 
 	if (is_operator(&s[*i], &len, &type))
-	{
-		*i += len;
-		return (ft_substr(s, start, len));
-	}
+		return (*i += len, ft_substr(s, start, len));
 	while (s[*i] && !is_operator(&s[*i], &len, &type))
 	{
 		if (s[*i] == '"' || s[*i] == '\'')
