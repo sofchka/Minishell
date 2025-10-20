@@ -7,6 +7,7 @@ int	main_loop_help(t_shell *shell, char *expanded)
 	expanded = expand_vars(shell->input, shell);
 	free(shell->input);
 	shell->input = expanded;
+	g_exit_status = 0;
 	if (token(shell, 0, 0))
 	{
 		free(shell->input);

@@ -74,8 +74,10 @@ static void	wait_and_clean(t_shell *sh, t_vars *vars,
 		close(vars->pfd[i][1]);
 	}
 	i = -1;
+	signal(SIGINT, &sigint_during_wait);
 	while (++i < sh->pipe_count + 1)
 		waitpid(vars->pids[i], &status, 0);
+	signal(SIGINT, &handling_signal);
 	ft_free_execs(cmds);
 	if (vars->pfd)
 		free(vars->pfd);

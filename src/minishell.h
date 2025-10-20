@@ -113,6 +113,8 @@ void	init_env(t_shell *shell, char **envp);
 // signals.c
 void	set_signals(void);
 void	sigint_heredoc(int sig);
+void	sigint_during_wait(int sig);
+void	handling_signal(int signal);
 
 // check.c
 int		has_open_quote(const char *s);

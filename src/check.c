@@ -82,7 +82,7 @@ int	syntax_error(t_shell *sh, int i)
 			if (!sh->tokens[i + 1])
 			{
 				write(2,
-					"shell 1: syntax error near unexpected token `newline'\n",
+					"shell: syntax error near unexpected token `newline'\n",
 					54);
 				return (1);
 			}

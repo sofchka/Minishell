@@ -6,11 +6,11 @@ static void	pipes_and_redir(t_exec *cmds, t_vars *vars, int i, t_shell *sh)
 
 	if (handle_redirection(cmds) == -1)
 		exit(g_exit_status);
-	if (i > 0 && !cmds->has_infile
-		&& dup2(vars->pfd[i - 1][0], STDIN_FILENO) < 0)
+	if (i > 0 && !cmds->has_infile && dup2(vars->pfd[i - 1][0],
+		STDIN_FILENO) < 0)
 		ft_exit_perror("dup2 stdin");
-	if (i < sh->pipe_count && !cmds->has_outfile
-		&& dup2(vars->pfd[i][1], STDOUT_FILENO) < 0)
+	if (i < sh->pipe_count && !cmds->has_outfile && dup2(vars->pfd[i][1],
+		STDOUT_FILENO) < 0)
 		ft_exit_perror("dup2 stdout");
 	if (cmds->heredoc_fd > 0)
 	{
@@ -27,8 +27,8 @@ static void	pipes_and_redir(t_exec *cmds, t_vars *vars, int i, t_shell *sh)
 
 static void	handle_special_cmds(t_exec *cmds, t_shell *sh)
 {
-	if (ft_strncmp(cmds->cmd, " ", 2) == 0
-		&& (cmds->token && ft_strncmp(cmds->token, "<<", 3) == 0))
+	if (ft_strncmp(cmds->cmd, " ", 2) == 0 && (cmds->token
+			&& ft_strncmp(cmds->token, "<<", 3) == 0))
 		exit(0);
 	if (ft_strncmp(cmds->cmd, ".", 2) == 0)
 	{
@@ -70,8 +70,8 @@ static void	handle_builtin_or_path(t_exec *cmds, t_vars *vars, t_shell *sh)
 	}
 }
 
-static int	check_directory_and_exec(t_exec *cmds, t_vars *vars,
-		t_shell *sh, char **env_arr)
+static int	check_directory_and_exec(t_exec *cmds, t_vars *vars, t_shell *sh,
+		char **env_arr)
 {
 	struct stat	st;
 
@@ -101,6 +101,8 @@ void	redirections_execve(t_exec *cmds, t_vars *vars, int i, t_shell *sh)
 	int		status;
 	char	**env_arr;
 
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
 	pipes_and_redir(cmds, vars, i, sh);
 	handle_special_cmds(cmds, sh);
 	handle_builtin_or_path(cmds, vars, sh);
