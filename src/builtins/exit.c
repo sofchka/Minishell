@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../minishell.h"
 
 long long	ft_atol(const char *str, int *state)
 {

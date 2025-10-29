@@ -74,7 +74,7 @@ int	syntax_error(t_shell *sh, int i)
 	{
 		if ((i == 0 && (ft_strncmp(sh->tokens[i], "|", 1) == 0))
 			|| (ft_strncmp(sh->tokens[i], "||", 2) == 0 && !sh->tokens[i + 1]))
-			return (write(STDERR_FILENO,
+			return (write(2,
 					"shell: syntax error near unexpected token `|'\n",
 					46));
 		else if (if_case(sh, i, &len))
@@ -83,7 +83,7 @@ int	syntax_error(t_shell *sh, int i)
 			{
 				write(2,
 					"shell: syntax error near unexpected token `newline'\n",
-					54);
+					52);
 				return (1);
 			}
 			else

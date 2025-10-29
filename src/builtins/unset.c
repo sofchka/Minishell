@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../minishell.h"
 
 void	unset_env(t_shell *sh, char **cmd, int count)
 {
