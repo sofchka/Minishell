@@ -27,9 +27,10 @@ char	*strip_quotes(char *s, char *res)
 	return (res);
 }
 
-static void	write_heredoc_input(int fd, char *delimiter)
+static void	write_heredoc_input(int fd, char *delimiter, t_shell *sh)
 {
 	char	*line;
+	char	*expanded;
 
 	signal(SIGINT, sigint_heredoc);
 	signal(SIGQUIT, SIG_IGN);
@@ -47,14 +48,16 @@ static void	write_heredoc_input(int fd, char *delimiter)
 			free(line);
 			break ;
 		}
-		write(fd, line, ft_strlen(line));
+		expanded = expand_vars(line, sh, 0);
+		write(fd, expanded, ft_strlen(expanded));
 		write(fd, "\n", 1);
 		free(line);
+		free(expanded);
 	}
 	set_signals();
 }
 
-static void	collect_one_heredoc(t_exec *owner, char *delim)
+static void	collect_one_heredoc(t_exec *owner, char *delim, t_shell *sh)
 {
 	int		p[2];
 	char	*clean;
@@ -62,7 +65,7 @@ static void	collect_one_heredoc(t_exec *owner, char *delim)
 	if (pipe(p) == -1)
 		ft_exit_perror("pipe");
 	clean = strip_quotes(delim, ft_strdup(""));
-	write_heredoc_input(p[1], clean);
+	write_heredoc_input(p[1], clean, sh);
 	free(clean);
 	close(p[1]);
 	if (g_exit_status == 130)
@@ -76,13 +79,13 @@ static void	collect_one_heredoc(t_exec *owner, char *delim)
 	owner->heredoc_fd = p[0];
 }
 
-static void	append_heredoc_extra(t_exec *cur, char **tmp)
+static void	append_heredoc_extra(t_exec *cur, char **tmp, t_shell *sh)
 {
 	int		k;
 	char	*tmp2;
 
 	k = 1;
-	collect_one_heredoc(cur, tmp[0]);
+	collect_one_heredoc(cur, tmp[0], sh);
 	while (tmp[k])
 	{
 		if (!cur->cmd)
@@ -110,7 +113,7 @@ void	herdoc_handle(t_shell *sh, t_exec **data, int count)
 		{
 			tmp = ft_split(res->arg, ' ');
 			if (!ft_strncmp(res->op, "<<", 2))
-				append_heredoc_extra(cur, tmp);
+				append_heredoc_extra(cur, tmp, sh);
 			ft_free(tmp);
 			res = res->next;
 		}

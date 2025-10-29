@@ -70,6 +70,20 @@ t_exec	*split_by_pipe(t_shell *sh, int i, t_exec *head, t_exec *cur)
 			append_word(cur, sh->tokens[i]);
 		i++;
 	}
+
+	// t_exec	*tmp;
+
+	// tmp = head;
+	// while (tmp)
+	// {
+	// 	printf("NODE: cmd=[%s] cmd2=[%s] token=[%s]\n",
+	// 		tmp->cmd ? tmp->cmd : "NULL",
+	// 		tmp->cmd2 ? tmp->cmd2 : "NULL",
+	// 		tmp->token ? tmp->token : "NULL");
+	// 	tmp = tmp->next;
+	// }
+
+
 	return (head);
 }
 

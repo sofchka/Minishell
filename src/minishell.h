@@ -146,7 +146,7 @@ void	redirections_execve(t_exec *cmds, t_vars *vars, int i, t_shell *sh);
 int		start(t_shell *sh, int status);
 
 // expend.c
-char	*expand_vars(char *input, t_shell *shell);
+char	*expand_vars(char *input, t_shell *shell, int cas);
 char	*get_env_value(char *name, t_shell *shell);
 
 // expend_2.c

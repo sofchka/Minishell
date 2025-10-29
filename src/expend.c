@@ -41,11 +41,11 @@ static int	handle_dollar(t_exp *e, size_t len)
 	return (1);
 }
 
-char	*expand_loop(t_exp e, int r)
+char	*expand_loop(t_exp e, int r, int cas)
 {
 	while (e.in[e.i])
 	{
-		if (!e.sq && !e.dq && e.in[e.i] == '<'
+		if (!e.sq && !e.dq && e.in[e.i] == '<' && cas == 1
 			&& e.in[e.i + 1] != '\0' && e.in[e.i + 1] == '<')
 		{
 			if (!copy_heredoc(&e, 0))
@@ -73,7 +73,7 @@ char	*expand_loop(t_exp e, int r)
 	return (e.out);
 }
 
-char	*expand_vars(char *input, t_shell *shell)
+char	*expand_vars(char *input, t_shell *shell, int cas)
 {
 	t_exp	e;
 
@@ -84,5 +84,5 @@ char	*expand_vars(char *input, t_shell *shell)
 	e.out = ft_calloc(1, e.cap);
 	if (!e.out)
 		return (NULL);
-	return (expand_loop(e, 0));
+	return (expand_loop(e, 0, cas));
 }

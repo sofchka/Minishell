@@ -10,7 +10,7 @@ static int	redir_input(char *file, t_exec *cmds)
 	free(name);
 	if (fd < 0)
 	{
-		ft_exit_perror(file);
+		print_error(file, "No such file or directory");
 		g_exit_status = 1;
 		return (-1);
 	}

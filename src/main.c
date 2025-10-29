@@ -4,7 +4,7 @@ int	g_exit_status;
 
 int	main_loop_help(t_shell *shell, char *expanded)
 {
-	expanded = expand_vars(shell->input, shell);
+	expanded = expand_vars(shell->input, shell, 1);
 	free(shell->input);
 	shell->input = expanded;
 	g_exit_status = 0;

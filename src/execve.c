@@ -78,7 +78,7 @@ static int	check_directory_and_exec(t_exec *cmds, t_vars *vars, t_shell *sh,
 	if (stat(vars->path, &st) == 0 && S_ISDIR(st.st_mode))
 	{
 		restore_std(sh);
-		print_error(cmds->cmd, "is a directory");
+		print_error(cmds->cmd, "Is a directory");
 		free(vars->path);
 		exit(126);
 	}
