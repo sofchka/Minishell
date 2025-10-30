@@ -37,10 +37,7 @@ void	split_by_pipe_2(t_shell *sh, int *i, t_exec *cur)
 {
 	append_sub(cur, sh->tokens[*i], sh->tokens[*i + 1]);
 	cur->token = sh->tokens[*i];
-	if (!ft_strncmp(cur->token, "<<", 2))
-		cur->cmd2 = ft_strdup(sh->tokens[*i + 1]);
-	else
-		cur->cmd2 = strip_quotes(sh->tokens[*i + 1], ft_strdup(""));
+	cur->cmd2 = ft_strdup(sh->tokens[*i + 1]);
 	*i += 2;
 }
 
@@ -70,20 +67,6 @@ t_exec	*split_by_pipe(t_shell *sh, int i, t_exec *head, t_exec *cur)
 			append_word(cur, sh->tokens[i]);
 		i++;
 	}
-
-	// t_exec	*tmp;
-
-	// tmp = head;
-	// while (tmp)
-	// {
-	// 	printf("NODE: cmd=[%s] cmd2=[%s] token=[%s]\n",
-	// 		tmp->cmd ? tmp->cmd : "NULL",
-	// 		tmp->cmd2 ? tmp->cmd2 : "NULL",
-	// 		tmp->token ? tmp->token : "NULL");
-	// 	tmp = tmp->next;
-	// }
-
-
 	return (head);
 }
 

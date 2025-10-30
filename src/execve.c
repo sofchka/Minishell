@@ -53,7 +53,7 @@ static void	handle_builtin_or_path(t_exec *cmds, t_vars *vars, t_shell *sh)
 	vars->cmd = ft_split(cmds->cmd, ' ');
 	if (cmds && is_builtin(vars->cmd[0]))
 	{
-		g_exit_status = exec_builtin(sh, vars->cmd, cmds);
+		g_exit_status = exec_builtin(sh, vars->cmd, cmds, 0);
 		ft_free_execs(cmds);
 		exit(g_exit_status);
 	}

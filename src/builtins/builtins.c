@@ -10,13 +10,15 @@ int	is_builtin(char *cmd)
 		|| !ft_strcmp(cmd, "exit"));
 }
 
-int	exec_builtin(t_shell *sh, char **cmd, t_exec *cmds)
+int	exec_builtin(t_shell *sh, char **cmd, t_exec *cmds, int state)
 {
-	if (handle_redirection(cmds) == -1)
+	if (state == 1)
 	{
-		restore_std(sh);
-		return (1);
+		if (handle_redirection(cmds) == -1)
+			return (ft_free(cmd), restore_std(sh), 1);
 	}
+	ft_free(cmd);
+	cmd = ft_split(cmds->cmd, ' ');
 	if (!cmd)
 		return (1);
 	if (!ft_strcmp(cmd[0], "echo"))

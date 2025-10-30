@@ -42,6 +42,6 @@ int	ft_echo(t_shell *sh, char **cmd)
 			write(1, " ", 1);
 	}
 	if (!flag)
-		printf("\n");
+		write(1, "\n", 1);
 	return (0);
 }

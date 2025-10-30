@@ -48,8 +48,7 @@ static void	exec_all(t_shell *sh, t_vars *vars, t_exec *cmds)
 	{
 		if (current->cmd)
 			exec_child(sh, vars, current, i);
-		else if (!current->cmd && current->token
-			&& !ft_strncmp(current->token, "<<", 3))
+		else if (!current->cmd && current->token)
 			handle_redirection(current);
 		if (i > 0)
 		{
@@ -102,7 +101,7 @@ int	start(t_shell *sh, int status)
 		split_arg = ft_split(cmds->cmd, ' ');
 		if (sh->pipe_count == 0 && cmds && is_builtin(split_arg[0]))
 		{
-			g_exit_status = exec_builtin(sh, split_arg, cmds);
+			g_exit_status = exec_builtin(sh, split_arg, cmds, 1);
 			ft_free_execs(cmds);
 			return (0);
 		}

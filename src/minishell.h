@@ -173,7 +173,7 @@ int		ft_export(t_shell *sh, char **args);
 int		ft_unset(t_shell *sh, char **args);
 int		ft_env(t_shell *sh, char **env);
 int		is_builtin(char *cmd);
-int		exec_builtin(t_shell *sh, char **cmd, t_exec *cmds);
+int		exec_builtin(t_shell *sh, char **cmd, t_exec *cmds, int state);
 
 // exit.c
 int		ft_exit(char **argv, t_shell *shell);
