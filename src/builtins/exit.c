@@ -71,7 +71,8 @@ int	ft_exit(char **argv, t_shell *shell)
 	int		state;
 
 	status = g_exit_status;
-	ft_putstr_fd("exit\n", STDOUT_FILENO);
+	if (shell->pipe_count == 0)
+		ft_putstr_fd("exit\n", STDOUT_FILENO);
 	if (argv[0] && argv[1])
 	{
 		num = ft_atol(argv[1], &state);

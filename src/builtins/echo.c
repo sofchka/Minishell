@@ -43,5 +43,6 @@ int	ft_echo(t_shell *sh, char **cmd)
 	}
 	if (!flag)
 		write(1, "\n", 1);
+	ft_free(cmd);
 	return (0);
 }

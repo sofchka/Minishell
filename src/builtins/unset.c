@@ -27,12 +27,15 @@ void	unset_env(t_shell *sh, char **cmd, int count)
 
 int	ft_unset(t_shell *sh, char **cmd)
 {
+	int	count;
+
 	if (!sh->t_env)
 		return (0);
-	int count = cmd_count(cmd);
+	count = cmd_count(cmd);
 	while (count-- != 1)
 	{
 		unset_env(sh, cmd, count);
 	}
+	ft_free(cmd);
 	return (0);
 }

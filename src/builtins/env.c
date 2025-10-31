@@ -8,7 +8,7 @@ int	ft_env(t_shell *sh, char **cmd)
 	if (cmd[1])
 	{
 		printf("env: '%s': No such file or directory\n", cmd[1]);
-		return (g_exit_status = 127, 1);
+		return (ft_free(cmd), g_exit_status = 127, 1);
 	}
 	while (tmp)
 	{
@@ -16,5 +16,5 @@ int	ft_env(t_shell *sh, char **cmd)
 			printf("%s=%s\n", tmp->key, tmp->value);
 		tmp = tmp->next;
 	}
-	return (0);
+	return (ft_free(cmd), 0);
 }

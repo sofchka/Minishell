@@ -3,13 +3,13 @@
 int	ft_pwd(t_shell *sh)
 {
 	char	*pwd;
-	char 	*str;
+	char	*str;
 
 	pwd = getcwd(NULL, 0);
 	if (!pwd)
 	{
 		str = get_env_value("PWD",sh);
-		if(str && str[0])
+		if (str && str[0])
 		{
 			write(STDOUT_FILENO, str, ft_strlen(str));
 			write(STDOUT_FILENO, "\n", 1);
@@ -18,7 +18,7 @@ int	ft_pwd(t_shell *sh)
 			perror("pwd");
 		if (pwd)
 			free(pwd);
-		if(str)
+		if (str)
 			free(str);
 		return (0);
 	}

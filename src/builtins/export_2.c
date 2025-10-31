@@ -73,7 +73,7 @@ int	ft_export(t_shell *sh, char **cmd)
 	int	err;
 
 	if (cmd_count(cmd) == 1)
-		return (ft_print_export(sh), g_exit_status = 0, 0);
+		return (ft_print_export(sh), ft_free(cmd), g_exit_status = 0, 0);
 	err = 0;
 	i = 1;
 	while (cmd[i])
@@ -83,5 +83,5 @@ int	ft_export(t_shell *sh, char **cmd)
 		i++;
 	}
 	g_exit_status = err;
-	return (err);
+	return (ft_free(cmd), err);
 }
