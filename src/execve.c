@@ -25,24 +25,30 @@ static void	pipes_and_redir(t_exec *cmds, t_vars *vars, int i, t_shell *sh)
 	}
 }
 
-static void	handle_special_cmds(t_exec *cmds, t_shell *sh)
+static void	handle_special_cmds(t_exec *cmds, t_shell *sh, char *tmp)
 {
-	if (ft_strncmp(cmds->cmd, " ", 2) == 0 && (cmds->token
-			&& ft_strncmp(cmds->token, "<<", 3) == 0))
-		exit(0);
-	if (ft_strncmp(cmds->cmd, ".", 2) == 0)
+	if (ft_strncmp(tmp, ".", 2) == 0)
 	{
 		ft_putstr_fd("shell: .: filename argument required\n", STDERR_FILENO);
 		ft_putstr_fd(".: usage: . filename [arguments]\n", STDERR_FILENO);
 		restore_std(sh);
+		free(tmp);
 		ft_free_execs(cmds);
 		exit(2);
 	}
-	if (ft_strncmp(cmds->cmd, "..", 3) == 0)
+	if (ft_strncmp(tmp, "..", 3) == 0)
 	{
 		restore_std(sh);
-		print_error(cmds->cmd, "command not found");
+		print_error(tmp, "command not found");
+		free(tmp);
+		ft_free_execs(cmds);
+		exit(127);
+	}
+	if (ft_strncmp(tmp, "\"\"", 3) == 0)
+	{
 		restore_std(sh);
+		print_error("''", "command not found");
+		free(tmp);
 		ft_free_execs(cmds);
 		exit(127);
 	}
@@ -62,11 +68,17 @@ static void	handle_builtin_or_path(t_exec *cmds, t_vars *vars, t_shell *sh)
 	{
 		restore_std(sh);
 		if (ft_strchr(vars->cmd[0], '/'))
+		{
 			print_error(vars->cmd[0], "No such file or directory");
+			ft_free(vars->cmd);
+			exit(2);
+		}
 		else
+		{
 			print_error(vars->cmd[0], "command not found");
-		ft_free(vars->cmd);
-		exit(127);
+			ft_free(vars->cmd);
+			exit(127);
+		}
 	}
 }
 
@@ -100,11 +112,17 @@ void	redirections_execve(t_exec *cmds, t_vars *vars, int i, t_shell *sh)
 {
 	int		status;
 	char	**env_arr;
+	char	*tmp;
 
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 	pipes_and_redir(cmds, vars, i, sh);
-	handle_special_cmds(cmds, sh);
+	if (ft_strncmp(cmds->cmd, " ", 2) == 0 && (cmds->token
+			&& ft_strncmp(cmds->token, "<<", 3) == 0))
+		exit(0);
+	tmp = strip_quotes(cmds->cmd, ft_strdup(""));
+	handle_special_cmds(cmds, sh, tmp);
+	free(tmp);
 	handle_builtin_or_path(cmds, vars, sh);
 	env_arr = env_list_to_array(sh->t_env, 0);
 	status = check_directory_and_exec(cmds, vars, sh, env_arr);

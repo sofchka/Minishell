@@ -11,15 +11,16 @@ INClUDE = -I
 
 CC = cc
 RM = rm -f
-FLAGS = -Wall -Wextra -Werror $(INCLUDE) 
+FLGS = -Wall -Wextra -Werror $(INCLUDE)
 
 all : $(NAME)
 
-%.o:	%.c libft.h
-	$(CC) $(FLAGS) -c $< -o $@
 
 $(NAME) : $(OBJS)
 			ar -rcs $(NAME) $(OBJS)
+
+%.o: %.c libft.h
+	$(CC) $(FLGS) -c $< -o $@
 
 bonus :	$(BONUS-OBJS)
 			ar -rcs $(NAME) $(BONUS-OBJS)

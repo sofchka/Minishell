@@ -33,8 +33,10 @@ void	ft_free_execs(t_exec *cmds)
 		tmp = cmds->next;
 		if (cmds->heredoc_fd > 0)
 			close(cmds->heredoc_fd);
-		free(cmds->cmd);
-		free(cmds->cmd2);
+		if (cmds->cmd)
+			free(cmds->cmd);
+		if (cmds->cmd2)
+			free(cmds->cmd2);
 		while (cmds->subs)
 		{
 			n = cmds->subs->next;

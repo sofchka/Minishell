@@ -18,7 +18,7 @@ int	is_n_e(char *str)
 	return (1);
 }
 
-int	ft_echo(t_shell *sh, char **cmd)
+int	ft_echo(char **cmd, t_exec *cmds)
 {
 	int	flag;
 	int	arg;
@@ -26,7 +26,7 @@ int	ft_echo(t_shell *sh, char **cmd)
 
 	flag = 0;
 	arg = 1;
-	(void)sh;
+	(void)cmds;
 	while (cmd[arg] && is_n_e(cmd[arg]))
 	{
 		flag = 1;

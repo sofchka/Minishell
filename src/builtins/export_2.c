@@ -16,6 +16,23 @@ static int	valid_export_key(char *s)
 	return (1);
 }
 
+static void	export_new_value(t_shell *sh, char *key, char *val)
+{
+	t_env	*new;
+	t_env	*tmp;
+
+	new = malloc(sizeof(t_env));
+	if (!new)
+		return (free(key), free(val));
+	new->key = key;
+	new->value = val;
+	new->next = NULL;
+	tmp = sh->t_env;
+	while (tmp->next)
+		tmp = tmp->next;
+	tmp->next = new;
+}
+
 static int	export_one(t_shell *sh, char *arg)
 {
 	char	*eq;
@@ -57,23 +74,22 @@ static int	export_one(t_shell *sh, char *arg)
 		}
 		n = n->next;
 	}
-	n = malloc(sizeof(t_env));
-	if (!n)
-		return (free(key), free(val), 1);
-	n->key = key;
-	n->value = val;
-	n->next = sh->t_env;
-	sh->t_env = n;
+	export_new_value(sh, key, val);
 	return (0);
 }
 
-int	ft_export(t_shell *sh, char **cmd)
+int	ft_export(t_shell *sh, char **cmd, int state)
 {
 	int	i;
 	int	err;
 
 	if (cmd_count(cmd) == 1)
-		return (ft_print_export(sh), ft_free(cmd), g_exit_status = 0, 0);
+	{
+		ft_print_export(sh);
+		if (state == 1)
+			ft_free(cmd);
+		return (g_exit_status = 0, 0);
+	}
 	err = 0;
 	i = 1;
 	while (cmd[i])
@@ -83,5 +99,7 @@ int	ft_export(t_shell *sh, char **cmd)
 		i++;
 	}
 	g_exit_status = err;
-	return (ft_free(cmd), err);
+	if (state == 1)
+		ft_free(cmd);
+	return (err);
 }

@@ -7,7 +7,7 @@ char	*strip_quotes(char *s, char *res)
 	char	q;
 
 	if (!s)
-		return (NULL);
+		return (res);
 	i = 0;
 	while (s[i])
 	{

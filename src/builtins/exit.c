@@ -79,7 +79,7 @@ int	ft_exit(char **argv, t_shell *shell)
 		if (argv[2] && isnumeric(argv[1]) && state == 0)
 		{
 			ft_putstr_fd("exit: too many arguments\n", STDERR_FILENO);
-			return (g_exit_status = 1, ft_free(argv), 1);
+			return (ft_free(argv), g_exit_status = 1, 1);
 		}
 		ft_exit_loop(argv, state);
 		status = (int)(num % 256);

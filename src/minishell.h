@@ -167,9 +167,7 @@ void	herdoc_handle(t_shell *sh, t_exec **data, int count);
 char	*strip_quotes(char *s, char *res);
 
 // builtins.c
-int		ft_echo(t_shell *sh, char **cmd);
 int		ft_cd(t_shell *sh, char **cmd);
-int		ft_export(t_shell *sh, char **args);
 int		ft_unset(t_shell *sh, char **args);
 int		ft_env(t_shell *sh, char **env);
 int		is_builtin(char *cmd);
@@ -187,10 +185,10 @@ int		cmd_count(char **cmd);
 
 // echo.c
 int		is_n_e(char *str);
-int		ft_echo(t_shell *sh, char **cmd);
+int		ft_echo(char **cmd, t_exec *cmds);
 
 // export.c
-int		ft_export(t_shell *sh, char **cmd);
+int		ft_export(t_shell *sh, char **cmd, int state);
 void	ft_print_export(t_shell *sh);
 
 // env.c

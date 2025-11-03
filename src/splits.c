@@ -60,6 +60,11 @@ t_exec	*split_by_pipe(t_shell *sh, int i, t_exec *head, t_exec *cur)
 			if (sh->tokens[i + 1])
 			{
 				split_by_pipe_2(sh, &i, cur);
+				if(cur->cmd2)
+				{
+					free(cur->cmd2);
+					cur->cmd2 = NULL;
+				}
 				continue ;
 			}
 		}

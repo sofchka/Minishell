@@ -15,7 +15,7 @@ static int	redir_input(char *file, t_exec *cmds)
 		return (-1);
 	}
 	if (dup2(fd, STDIN_FILENO) < 0)
-		return (close(fd), ft_exit_perror("dup2"), g_exit_status = 1, -1);
+		return (close(fd), perror("dup2"), g_exit_status = 1, -1);
 	close(fd);
 	cmds->has_infile = 1;
 	return (0);
@@ -33,9 +33,9 @@ int	redir_output(char *file, char *type, t_exec *cmds)
 		fd = open(name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	free(name);
 	if (fd < 0)
-		return (ft_exit_perror(file), g_exit_status = 1, -1);
+		return (perror(file), g_exit_status = 1, -1);
 	if (dup2(fd, STDOUT_FILENO) < 0)
-		return (close(fd), ft_exit_perror("dup2"), g_exit_status = 1, -1);
+		return (close(fd), perror("dup2"), g_exit_status = 1, -1);
 	close(fd);
 	cmds->has_outfile = 1;
 	return (0);
@@ -53,8 +53,9 @@ static void	append_redir_extra(t_exec *cmds, char **tmp)
 			cmds->cmd = ft_strdup(tmp[k]);
 		else
 		{
-			tmp2 = ft_strjoin(cmds->cmd, " ", 1);
+			tmp2 = ft_strjoin(cmds->cmd, " \"", 1);
 			cmds->cmd = ft_strjoin(tmp2, tmp[k], 1);
+			cmds->cmd = ft_strjoin(cmds->cmd, "\"", 1);
 		}
 		k++;
 	}

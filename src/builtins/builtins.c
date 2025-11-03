@@ -16,19 +16,22 @@ int	exec_builtin(t_shell *sh, char **cmd, t_exec *cmds, int state)
 	{
 		if (handle_redirection(cmds) == -1)
 			return (ft_free(cmd), restore_std(sh), 1);
+		if (cmds->token)
+		{
+			ft_free(cmd);
+			cmd = ft_split(cmds->cmd, ' ');
+		}
 	}
-	ft_free(cmd);
-	cmd = ft_split(cmds->cmd, ' ');
 	if (!cmd)
 		return (1);
 	if (!ft_strcmp(cmd[0], "echo"))
-		return (ft_echo(sh, cmd));
+		return (ft_echo(cmd, cmds));
 	else if (!ft_strcmp(cmd[0], "cd"))
 		return (ft_cd(sh, cmd));
 	else if (!ft_strcmp(cmd[0], "pwd"))
-		return (ft_pwd(sh));
+		return (ft_free(cmd), ft_pwd(sh));
 	else if (!ft_strcmp(cmd[0], "export"))
-		return (ft_export(sh, cmd));
+		return (ft_export(sh, cmd, 1));
 	else if (!ft_strcmp(cmd[0], "unset"))
 		return (ft_unset(sh, cmd));
 	else if (!ft_strcmp(cmd[0], "env"))

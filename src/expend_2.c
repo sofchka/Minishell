@@ -13,7 +13,7 @@ char	*get_env_value(char *name, t_shell *shell)
 	env = shell->t_env;
 	while (env)
 	{
-		if (ft_strncmp(env->key, name, len) == 0 && env->key[len] == '\0')
+		if (ft_strncmp(env->key, name, len) == 0 && env->key[len] == '\0' && (env->value != NULL))
 			return (ft_strdup(env->value));
 		env = env->next;
 	}

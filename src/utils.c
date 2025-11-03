@@ -75,9 +75,12 @@ char	**env_list_to_array(t_env *env, int count)
 	i = 0;
 	while (env)
 	{
-		joined = ft_strjoin(env->key, "=", 0);
-		arr[i] = ft_strjoin(joined, env->value, 1);
-		i++;
+		if (env->key && env->value)
+		{
+			joined = ft_strjoin(env->key, "=", 0);
+			arr[i] = ft_strjoin(joined, env->value, 1);
+			i++;
+		}
 		env = env->next;
 	}
 	arr[i] = NULL;
