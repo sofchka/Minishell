@@ -6,20 +6,16 @@
 /*   By: szakarya <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/30 19:17:26 by szakarya          #+#    #+#             */
-/*   Updated: 2025/01/30 19:18:21 by szakarya         ###   ########.fr       */
+/*   Updated: 2025/11/04 02:32:29 by szakarya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static size_t	word_count(const char *s, char c)
+static size_t	word_count(const char *s, char c, int i, size_t count)
 {
-	size_t	count;
-	int		i;
 	char	quote;
 
-	i = 0;
-	count = 0;
 	while (s[i])
 	{
 		while (s[i] == c)
@@ -75,11 +71,12 @@ char	**ft_split(char *s, char c)
 {
 	char	**res;
 	size_t	len;
-	size_t	i = 0;
+	size_t	i;
 
+	i = 0;
 	if (!s)
 		return (NULL);
-	len = word_count(s, c);
+	len = word_count(s, c, 0, 0);
 	res = malloc(sizeof(char *) * (len + 1));
 	if (!res)
 		return (NULL);

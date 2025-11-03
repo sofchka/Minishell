@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expend.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: szakarya <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/04 02:29:59 by szakarya          #+#    #+#             */
+/*   Updated: 2025/11/04 02:44:29 by szakarya         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static int	handle_dollar_2(t_exp *e, size_t len, char **val)
@@ -69,8 +81,7 @@ char	*expand_loop(t_exp e, int r, int cas)
 			return (free(e.out), NULL);
 		e.out[e.j++] = e.in[e.i++];
 	}
-	e.out[e.j] = '\0';
-	return (e.out);
+	return (e.out[e.j] = '\0', e.out);
 }
 
 char	*expand_vars(char *input, t_shell *shell, int cas)

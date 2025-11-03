@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   splits.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: szakarya <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/04 02:29:38 by szakarya          #+#    #+#             */
+/*   Updated: 2025/11/04 02:42:57 by szakarya         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static int	append_sub(t_exec *cur, char *op, char *arg)
@@ -41,6 +53,16 @@ void	split_by_pipe_2(t_shell *sh, int *i, t_exec *cur)
 	*i += 2;
 }
 
+static void	helper(t_shell *sh, int *i, t_exec *cur)
+{
+	split_by_pipe_2(sh, i, cur);
+	if (cur->cmd2)
+	{
+		free(cur->cmd2);
+		cur->cmd2 = NULL;
+	}
+}
+
 t_exec	*split_by_pipe(t_shell *sh, int i, t_exec *head, t_exec *cur)
 {
 	if (!head)
@@ -59,12 +81,7 @@ t_exec	*split_by_pipe(t_shell *sh, int i, t_exec *head, t_exec *cur)
 		{
 			if (sh->tokens[i + 1])
 			{
-				split_by_pipe_2(sh, &i, cur);
-				if(cur->cmd2)
-				{
-					free(cur->cmd2);
-					cur->cmd2 = NULL;
-				}
+				helper(sh, &i, cur);
 				continue ;
 			}
 		}
@@ -74,15 +91,3 @@ t_exec	*split_by_pipe(t_shell *sh, int i, t_exec *head, t_exec *cur)
 	}
 	return (head);
 }
-
-	// t_exec	*tmp;
-
-	// tmp = head;
-	// while (tmp)
-	// {
-	// 	printf("NODE: cmd=[%s] cmd2=[%s] token=[%s]\n",
-	// 		tmp->cmd ? tmp->cmd : "NULL",
-	// 		tmp->cmd2 ? tmp->cmd2 : "NULL",
-	// 		tmp->token ? tmp->token : "NULL");
-	// 	tmp = tmp->next;
-	// }

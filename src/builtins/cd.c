@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cd.c                                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: szakarya <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/04 02:33:23 by szakarya          #+#    #+#             */
+/*   Updated: 2025/11/04 02:50:57 by szakarya         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 int	cmd_count(char **cmd)
@@ -27,9 +39,8 @@ int	ft_cd(t_shell *sh, char **cmd)
 	export_dot[1] = NULL;
 	export_dot[2] = NULL;
 	if (ccmd > 2)
-		return (ft_free(export_dot), ft_free(cmd), write(2, "bash: cd: too many arguments\n",
-				29), g_exit_status = 1, 1);
-
+		return (ft_free(export_dot), ft_free(cmd), write(2,
+				"bash: cd: too many arguments\n", 29), g_exit_status = 1, 1);
 	oldpwd = getcwd(NULL, 0);
 	if (!oldpwd)
 	{
@@ -47,10 +58,12 @@ int	ft_cd(t_shell *sh, char **cmd)
 	{
 		path = get_env_value("HOME", sh);
 		if (!path || path[0] == '\0')
-			return (ft_free(cmd), write(STDERR_FILENO, "bash: cd: HOME not set\n", 23),
+			return (ft_free(cmd), write(STDERR_FILENO,
+					"bash: cd: HOME not set\n", 23),
 				g_exit_status = 1, 1);
 		if (chdir(path) == -1)
-			return (perror("cd"), ft_free(cmd), free(path), g_exit_status = 1, 1);
+			return (perror("cd"), ft_free(cmd),
+				free(path), g_exit_status = 1, 1);
 		free(path);
 	}
 	else if (ccmd == 2 && !ft_strcmp(cmd[1], "~"))
@@ -81,7 +94,7 @@ int	ft_cd(t_shell *sh, char **cmd)
 		free(tmp);
 		export_dot[1] = pwd_value;
 		ft_export(sh, export_dot, 0);
-		printf("cd: error retrieving current directory: getcwd: cannot access parent directories:\n");
+		write(1, "cd: error retrieving current directory: getcwd: cannot access parent directories:\n", 82);
 	}
 	else
 	{
@@ -92,6 +105,6 @@ int	ft_cd(t_shell *sh, char **cmd)
 	}
 	if (g_exit_status == 1)
 		return (ft_free(cmd), ft_free(export_dot), 1);
-    ft_free(export_dot);
-    return (ft_free(cmd), 0);
+	ft_free(export_dot);
+	return (ft_free(cmd), 0);
 }

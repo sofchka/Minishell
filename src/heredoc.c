@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   heredoc.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: szakarya <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/04 02:29:57 by szakarya          #+#    #+#             */
+/*   Updated: 2025/11/04 02:29:58 by szakarya         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 char	*strip_quotes(char *s, char *res)
@@ -27,9 +39,9 @@ char	*strip_quotes(char *s, char *res)
 	return (res);
 }
 
-static void	write_heredoc_input(int fd, char *delimiter, t_shell *sh)
+static void	write_heredoc_input(int fd,
+	char *delimiter, t_shell *sh, char *line)
 {
-	char	*line;
 	char	*expanded;
 
 	signal(SIGINT, sigint_heredoc);
@@ -65,7 +77,7 @@ static void	collect_one_heredoc(t_exec *owner, char *delim, t_shell *sh)
 	if (pipe(p) == -1)
 		ft_exit_perror("pipe");
 	clean = strip_quotes(delim, ft_strdup(""));
-	write_heredoc_input(p[1], clean, sh);
+	write_heredoc_input(p[1], clean, sh, NULL);
 	free(clean);
 	close(p[1]);
 	if (g_exit_status == 130)

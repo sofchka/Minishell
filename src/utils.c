@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: szakarya <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/04 02:29:56 by szakarya          #+#    #+#             */
+/*   Updated: 2025/11/04 02:29:57 by szakarya         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void	restore_std(t_shell *sh)
@@ -78,11 +90,9 @@ char	**env_list_to_array(t_env *env, int count)
 		if (env->key && env->value)
 		{
 			joined = ft_strjoin(env->key, "=", 0);
-			arr[i] = ft_strjoin(joined, env->value, 1);
-			i++;
+			arr[i++] = ft_strjoin(joined, env->value, 1);
 		}
 		env = env->next;
 	}
-	arr[i] = NULL;
-	return (arr);
+	return (arr[i] = NULL, arr);
 }

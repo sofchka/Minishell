@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pwd.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: szakarya <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/04 02:30:04 by szakarya          #+#    #+#             */
+/*   Updated: 2025/11/04 02:33:38 by szakarya         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 int	ft_pwd(t_shell *sh)
@@ -8,7 +20,7 @@ int	ft_pwd(t_shell *sh)
 	pwd = getcwd(NULL, 0);
 	if (!pwd)
 	{
-		str = get_env_value("PWD",sh);
+		str = get_env_value("PWD", sh);
 		if (str && str[0])
 		{
 			write(STDOUT_FILENO, str, ft_strlen(str));

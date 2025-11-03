@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expend_2.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: szakarya <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/04 02:29:54 by szakarya          #+#    #+#             */
+/*   Updated: 2025/11/04 02:29:55 by szakarya         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 char	*get_env_value(char *name, t_shell *shell)
@@ -13,7 +25,8 @@ char	*get_env_value(char *name, t_shell *shell)
 	env = shell->t_env;
 	while (env)
 	{
-		if (ft_strncmp(env->key, name, len) == 0 && env->key[len] == '\0' && (env->value != NULL))
+		if (ft_strncmp(env->key, name, len) == 0
+			&& env->key[len] == '\0' && (env->value != NULL))
 			return (ft_strdup(env->value));
 		env = env->next;
 	}

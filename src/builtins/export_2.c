@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   export_2.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: szakarya <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/26 15:29:17 by szakarya          #+#    #+#             */
+/*   Updated: 2025/11/04 02:28:53 by szakarya         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 static int	valid_export_key(char *s)
@@ -33,13 +45,8 @@ static void	export_new_value(t_shell *sh, char *key, char *val)
 	tmp->next = new;
 }
 
-static int	export_one(t_shell *sh, char *arg)
+static int	export_one_2(char *arg, char *eq, char **key, char **val)
 {
-	char	*eq;
-	char	*key;
-	char	*val;
-	t_env	*n;
-
 	if (!valid_export_key(arg))
 	{
 		ft_putstr_fd("bash: export: `", 2);
@@ -47,17 +54,29 @@ static int	export_one(t_shell *sh, char *arg)
 		ft_putstr_fd("': not a valid identifier\n", 2);
 		return (1);
 	}
-	eq = ft_strchr(arg, '=');
-	val = NULL;
 	if (eq)
 	{
-		key = ft_substr(arg, 0, (size_t)(eq - arg));
-		val = ft_strdup(eq + 1);
+		*key = ft_substr(arg, 0, (size_t)(eq - arg));
+		*val = ft_strdup(eq + 1);
 	}
 	else
-		key = ft_strdup(arg);
-	if (!key || (eq && !val))
-		return (free(key), free(val), 1);
+		*key = ft_strdup(arg);
+	if (!(*key) || (eq && !(*val)))
+		return (free(*key), free(*val), 1);
+	free(*key);
+	free(*val);
+	return (1);
+}
+
+static int	export_one(t_shell *sh, char *arg, char *val)
+{
+	char	*eq;
+	char	*key;
+	t_env	*n;
+
+	eq = ft_strchr(arg, '=');
+	if (export_one_2(arg, eq, &key, &val))
+		return (1);
 	n = sh->t_env;
 	while (n)
 	{
@@ -94,7 +113,7 @@ int	ft_export(t_shell *sh, char **cmd, int state)
 	i = 1;
 	while (cmd[i])
 	{
-		if (export_one(sh, cmd[i]))
+		if (export_one(sh, cmd[i], NULL))
 			err = 1;
 		i++;
 	}

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exit.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: szakarya <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/04 02:30:02 by szakarya          #+#    #+#             */
+/*   Updated: 2025/11/04 02:33:31 by szakarya         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 long long	ft_atol(const char *str, int *state)
@@ -64,6 +76,15 @@ int	isnumeric(char *arg)
 	return (0);
 }
 
+static void	free_for_exit(char **argv, t_shell *shell)
+{
+	free(shell->input);
+	ft_free(shell->tokens);
+	close(shell->stdin_backup);
+	close(shell->stdout_backup);
+	ft_free(argv);
+}
+
 int	ft_exit(char **argv, t_shell *shell)
 {
 	int		status;
@@ -86,10 +107,6 @@ int	ft_exit(char **argv, t_shell *shell)
 		if (status < 0)
 			status += 256;
 	}
-	free(shell->input);
-	ft_free(shell->tokens);
-	close(shell->stdin_backup);
-	close(shell->stdout_backup);
-	ft_free(argv);
+	free_for_exit(argv, shell);
 	exit(status);
 }

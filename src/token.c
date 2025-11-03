@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   token.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: szakarya <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/04 02:29:52 by szakarya          #+#    #+#             */
+/*   Updated: 2025/11/04 02:29:53 by szakarya         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static void	count_tokens_help(const char *s, int *i, char q)
@@ -14,14 +26,12 @@ static void	count_tokens_help(const char *s, int *i, char q)
 		(*i)++;
 }
 
-static int	count_tokens(const char *s)
+static int	count_tokens(const char *s, int i)
 {
-	int		i;
 	int		len;
 	t_data	type;
 	int		count;
 
-	i = 0;
 	count = 0;
 	while (s[i])
 	{
@@ -96,7 +106,7 @@ int	token(t_shell *sh, int i, int j)
 {
 	if (has_open_quote(sh->input))
 		return (1);
-	sh->tok_count = count_tokens(sh->input);
+	sh->tok_count = count_tokens(sh->input, 0);
 	if (sh->tok_count == 0)
 		return (1);
 	sh->tokens = malloc(sizeof(char *) * (sh->tok_count + 1));

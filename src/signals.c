@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signals.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: szakarya <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/04 02:30:01 by szakarya          #+#    #+#             */
+/*   Updated: 2025/11/04 02:30:02 by szakarya         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void	handling_signal(int signal)
@@ -26,7 +38,6 @@ void	set_signals(void)
 
 void	sigint_heredoc(int sig)
 {
-
 	g_exit_status = 130;
 	(void)sig;
 	write(1, "\n", 1);
