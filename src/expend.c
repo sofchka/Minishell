@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expend.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szakarya <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: mtumanya <mtumanya@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 02:29:59 by szakarya          #+#    #+#             */
-/*   Updated: 2025/11/04 02:44:29 by szakarya         ###   ########.fr       */
+/*   Updated: 2025/11/04 14:49:54 by mtumanya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,17 +53,27 @@ static int	handle_dollar(t_exp *e, size_t len)
 	return (1);
 }
 
-char	*expand_loop(t_exp e, int r, int cas)
+static int	helper_expend_loop(t_exp e, int cas)
+{
+	if (!e.sq && !e.dq && e.in[e.i] == '<' && cas == 1
+		&& e.in[e.i + 1] != '\0' && e.in[e.i + 1] == '<')
+	{
+		if (!copy_heredoc(&e, 0))
+			return (free(e.out), 1);
+		return (2);
+	}
+	return (0);
+}
+
+char	*expand_loop(t_exp e, int r, int cas, int help)
 {
 	while (e.in[e.i])
 	{
-		if (!e.sq && !e.dq && e.in[e.i] == '<' && cas == 1
-			&& e.in[e.i + 1] != '\0' && e.in[e.i + 1] == '<')
-		{
-			if (!copy_heredoc(&e, 0))
-				return (free(e.out), NULL);
+		help = helper_expend_loop(e, cas);
+		if (help == 1)
+			return (NULL);
+		if (help == 2)
 			continue ;
-		}
 		r = handle_quote(&e);
 		if (r == 0)
 			return (free(e.out), NULL);
@@ -95,5 +105,5 @@ char	*expand_vars(char *input, t_shell *shell, int cas)
 	e.out = ft_calloc(1, e.cap);
 	if (!e.out)
 		return (NULL);
-	return (expand_loop(e, 0, cas));
+	return (expand_loop(e, 0, cas, 0));
 }

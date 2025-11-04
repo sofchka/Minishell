@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szakarya <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: mtumanya <mtumanya@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 02:34:10 by szakarya          #+#    #+#             */
-/*   Updated: 2025/11/04 02:34:11 by szakarya         ###   ########.fr       */
+/*   Updated: 2025/11/04 14:46:15 by mtumanya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,17 @@ typedef struct s_exp
 	int		dq;
 	t_shell	*sh;
 }	t_exp;
+
+typedef struct s_cd
+{
+	char	*path;
+	int		ccmd;
+	char	*a;
+	char	*oldpwd;
+	char	**export_dot;
+	char	*pwd_value;
+	char	*tmp;
+}	t_cd;
 
 // frees.c
 void	ft_free(char **arg);
