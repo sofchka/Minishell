@@ -158,9 +158,9 @@ t_rsub	*new_sub(char *op, char *arg);
 int		is_redir_tok(char *s);
 int		is_pipe_tok(char *s);
 t_exec	*new_exec_node(void);
+int		extract_cmd_from_cmd2(t_exec *cur, int i);
 
 // find_path.c
-void	ft(char **str);
 int		find_path(t_env *env, char ***path);
 char	*find_cmd(char *command, t_env *env, int i, char *tmp);
 
@@ -186,8 +186,10 @@ char	*ft_join(char *a, char *b, char *c);
 char	**env_list_to_array(t_env *env, int count);
 
 // heredoc.c
-void	herdoc_handle(t_shell *sh, t_exec **data, int count);
-char	*strip_quotes(char *s, char *res);
+void	herdoc_handle(t_shell *sh, t_exec **data, int count, int drosh);
+char	*strip_quotes(char *s);
+void	append_heredoc_extra(t_exec *cur,
+			char **tmp, t_shell *sh, int drosh);
 
 // builtins.c
 int		ft_cd(t_shell *sh, char **cmd);
@@ -213,6 +215,7 @@ int		ft_echo(char **cmd, t_exec *cmds);
 // export.c
 int		ft_export(t_shell *sh, char **cmd, int state);
 void	ft_print_export(t_shell *sh);
+int		export_one(t_shell *sh, char *arg, char *val);
 
 // env.c
 int		ft_env(t_shell *sh, char **cmd);

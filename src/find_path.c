@@ -62,6 +62,8 @@ char	*find_cmd(char *command, t_env *env, int i, char *tmp)
 	char	**paths;
 	char	**cmd;
 
+	if (access (command, X_OK) == 0)
+		return (ft_strdup(command));
 	if (find_path(env, &paths) == 0)
 		return (NULL);
 	cmd = ft_split(command, ' ');
@@ -69,7 +71,7 @@ char	*find_cmd(char *command, t_env *env, int i, char *tmp)
 		return (ft_free_split(paths), NULL);
 	if (ft_strchr(cmd[0], '/'))
 		return (ft_free_split(paths), full_cmd(cmd));
-	while (paths[i])
+	while (paths[++i])
 	{
 		tmp = ft_strjoin(paths[i], "/", 0);
 		if (!tmp)
@@ -80,7 +82,6 @@ char	*find_cmd(char *command, t_env *env, int i, char *tmp)
 		if (access(tmp, X_OK) == 0)
 			return (ft_free_split(paths), ft_free_split(cmd), tmp);
 		free(tmp);
-		i++;
 	}
 	return (ft_free_split(paths), ft_free_split(cmd), NULL);
 }

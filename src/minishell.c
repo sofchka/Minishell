@@ -94,7 +94,8 @@ static void	wait_and_clean(t_shell *sh, t_vars *vars,
 		free(vars->pfd);
 	if (vars->pids)
 		free(vars->pids);
-	g_exit_status = WEXITSTATUS(status);
+	if (g_exit_status == 0)
+		g_exit_status = WEXITSTATUS(status);
 }
 
 int	start(t_shell *sh, int status)
@@ -105,7 +106,7 @@ int	start(t_shell *sh, int status)
 
 	cmds = split_by_pipe(sh, 0, new_exec_node(), NULL);
 	if (sh->heredocs > 0)
-		herdoc_handle(sh, &cmds, 0);
+		herdoc_handle(sh, &cmds, 0, 0);
 	if (!cmds)
 		return (0);
 	if (cmds->cmd)
